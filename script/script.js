@@ -1,5 +1,5 @@
-async function getBookByISBN() {
-    const resp = await fetch("https://openlibrary.org/isbn/9780140328721.json")
+async function getBookByISBN(isbn) {
+    const resp = await fetch(`https://openlibrary.org/isbn/${isbn}.json`)
 
     if (!resp.ok) {
         throw new Error("Something went wrong when fetching data.")
@@ -10,6 +10,18 @@ async function getBookByISBN() {
     return json.title
 }
 
+async function getAuthorByOLID() {
+    const resp = await fetch(`https://openlibrary.org/authors/OL23919A.json`)
+
+    if (!resp.ok) {
+        throw new Error("Something went wrong when fetching data.")
+    }
+
+    const json = await resp.json()
+
+    return json.source_records
+}
+
 const app = {
     data() {
         return {
@@ -18,7 +30,9 @@ const app = {
     },
     methods: {
         async getBook() {
-            book = await getBookByISBN()
+            let source_records = await getAuthorByOLID()
+            let split = source_records[0].split(":")
+            book = await getBookByISBN(split[1])
             console.log(book)
         }
     }
