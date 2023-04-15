@@ -18,23 +18,40 @@ async function getAuthorByOLID() {
     }
 
     const json = await resp.json()
-
+    
     return json.source_records
+}
+
+async function getBioByOLID() {
+    const resp = await fetch(`https://openlibrary.org/authors/OL23919A.json`)
+
+    if (!resp.ok) {
+        throw new Error("Something went wrong when fetching data.")
+    }
+
+    const json = await resp.json()
+    
+    return json.bio
 }
 
 const app = {
     data() {
         return {
-            book: ""
+            book: "",
+            bio: ""
         }
     },
     methods: {
         async getBook() {
             let source_records = await getAuthorByOLID()
-            let split = source_records[0].split(":")
-            book = await getBookByISBN(split[1])
-            console.log(book)
-        }
+            let split = source_records[1].split(":")     
+            book = await getBookByISBN(split[1])        
+            console.log(book)                           
+        },
+
+        async getBio() {
+            this.bio = await getBioByOLID()
+        } 
     }
 }
 Vue.createApp(app).mount("#app")
