@@ -25,7 +25,7 @@ async function getBookByISBN(isbn) {
 }
 
 async function getWorkbyOLID(worksOLID) {
-    const resp = await fetch(`https://openlibrary.org/${worksOLID}.json`)
+    const resp = await fetch(`https://openlibrary.org${worksOLID}.json`)
 
     if (!resp.ok) {
         throw new Error("Something went wrong when fetching data.")
@@ -37,7 +37,7 @@ async function getWorkbyOLID(worksOLID) {
 }
 
 async function getAuthorByOLID(authorOLID) {
-    const resp = await fetch(`https://openlibrary.org/${authorOLID}.json`)
+    const resp = await fetch(`https://openlibrary.org${authorOLID}.json`)
 
     if (!resp.ok) {
         throw new Error("Something went wrong when fetching data.")
