@@ -34,11 +34,30 @@ async function getBioByOLID() {
     return json.bio
 }
 
+async function readFile() {
+    const resp = await fetch("assets/isbn.txt")
+
+    if (!resp.ok) {
+        throw new Error("Something wrong when reading from file.. " + resp.status)
+    }
+
+    let text = await resp.text()
+
+    return text
+}
+
+async function makeList() {
+    let text = await readFile()
+    let list = text.split("\n")
+    return list
+}
+
 const app = {
     data() {
         return {
             book: "",
-            bio: ""
+            bio: "",
+            isbn: []
         }
     },
     methods: {
@@ -48,10 +67,16 @@ const app = {
             book = await getBookByISBN(split[1])        
             console.log(book)                           
         },
-
         async getBio() {
             this.bio = await getBioByOLID()
-        } 
+        },
+        async getISBN() {
+            this.isbn = await makeList()
+        }
+    },
+    created() {
+        this.getISBN()
     }
 }
 Vue.createApp(app).mount("#app")
+

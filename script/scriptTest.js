@@ -31,3 +31,4 @@ Vue.createApp(app).mount("#app")
             book = await getBookByISBN(split[1])        //"4863895666" skickas in i getBookby...
             console.log(book)                           //Skriver ut titel
         }, */
+
