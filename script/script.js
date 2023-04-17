@@ -9,11 +9,23 @@ async function getBookByISBN(isbn) {
 
     const json = await resp.json()
 
-    return json.title
+    let bookAndAuthor = []
+
+    bookAndAuthor.push(json.title)
+
+    // needs to do check if author olid doesn't work
+    // this is a workaround
+    let worksOLID = json.works[0].key
+    let authorOLID =  await getWorkbyOLID(worksOLID) //json.authors[0].author.key
+    
+    let authorName = await getAuthorByOLID(authorOLID)
+    bookAndAuthor.push(authorName)
+
+    return bookAndAuthor
 }
 
-async function getAuthorByOLID() {
-    const resp = await fetch(`https://openlibrary.org/authors/OL23919A.json`)
+async function getAuthorByOLID(authorOLID) {
+    const resp = await fetch(`https://openlibrary.org/${authorOLID}.json`)
 
     if (!resp.ok) {
         throw new Error("Something went wrong when fetching data.")
@@ -21,7 +33,7 @@ async function getAuthorByOLID() {
 
     const json = await resp.json()
     
-    return json.source_records
+    return json.personal_name
 }
 
 async function getBioByOLID() {
@@ -45,10 +57,15 @@ const app = {
         }
     },
     methods: {
-        async getBook() {
-            let source_records = await getAuthorByOLID()
-            let split = source_records[1].split(":")     
-            book = await getBookByISBN(split[1])        
+        async setup() {
+            for (let i = 0; i < 4; i++) {
+                let booksAndAuthors = []
+                booksAndAuthors.push(await getBookByISBN(this.isbn[i]))
+                console.log(booksAndAuthors)
+            }
+        },
+        async getBook(isbn) {   
+            book = await getBookByISBN(isbn)        
             console.log(book)                           
         },
         async getBio() {
@@ -62,8 +79,11 @@ const app = {
     // },
     // template: `<div>
     // </div>`,
-    created() {
-        this.getISBN()
+    async created() {
+        await this.getISBN()
+        await this.setup()
+    },
+    mounted() {
     }
 }
 
