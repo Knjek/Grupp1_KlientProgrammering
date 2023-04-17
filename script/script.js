@@ -1,3 +1,5 @@
+import ReadFile from './ReadFile.js'
+
 async function getBookByISBN(isbn) {
     const resp = await fetch(`https://openlibrary.org/isbn/${isbn}.json`)
 
@@ -34,24 +36,6 @@ async function getBioByOLID() {
     return json.bio
 }
 
-async function readFile() {
-    const resp = await fetch("assets/isbn.txt")
-
-    if (!resp.ok) {
-        throw new Error("Something wrong when reading from file.. " + resp.status)
-    }
-
-    let text = await resp.text()
-
-    return text
-}
-
-async function makeList() {
-    let text = await readFile()
-    let list = text.split("\n")
-    return list
-}
-
 const app = {
     data() {
         return {
@@ -71,12 +55,17 @@ const app = {
             this.bio = await getBioByOLID()
         },
         async getISBN() {
-            this.isbn = await makeList()
+            this.isbn = await ReadFile.makeList()
         }
     },
+    // components: {
+    // },
+    // template: `<div>
+    // </div>`,
     created() {
         this.getISBN()
     }
 }
+
 Vue.createApp(app).mount("#app")
 
