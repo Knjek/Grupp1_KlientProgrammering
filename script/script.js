@@ -44,8 +44,16 @@ async function getAuthorByOLID(authorOLID) {
     }
 
     const json = await resp.json()
+
+    //Sometimes the author name gets undefined. "personal_name" is then missing in the json. 
+    //Instead it seems to be just "name"
+    if (json.personal_name === undefined) {
+        return json.name
+    }
+    else {
+        return json.personal_name
+    }
     
-    return json.personal_name
 }
 
 async function getBioByOLID() {
