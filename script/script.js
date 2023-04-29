@@ -45,6 +45,7 @@ async function getAuthorByOLID(authorOLID) {
 
     const json = await resp.json()
 
+
     /* Some json doesen´t seem to have "personal_name" for the authors name, just "name".
     Therefore this if-statement */
     if (json.personal_name === undefined) {
