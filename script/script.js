@@ -44,8 +44,16 @@ async function getAuthorByOLID(authorOLID) {
     }
 
     const json = await resp.json()
+
+    /* Some json doesen´t seem to have "personal_name" for the authors name, just "name".
+    Therefore this if-statement */
+    if (json.personal_name === undefined) {
+        return json.name
+    }
+    else {
+        return json.personal_name
+    }
     
-    return json.personal_name
 }
 
 async function getBioByOLID() {
@@ -70,11 +78,23 @@ const app = {
     },
     methods: {
         async setup() {
+            //Program reads our text file and creates a list containing all the isbn numbers
+            await this.getISBN()
+           /*Temporary list so we can manipulate (i.e. removing an isbn from the list after it's been
+            added to the other list we want to display (with 4 authors & 4 books) This way we won't
+            add any duplicates) */
+            let temporaryISBNList = [...this.isbn]
+            let fourBooksAndAuthors = []
+
             for (let i = 0; i < 4; i++) {
-                let booksAndAuthors = []
-                booksAndAuthors.push(await getBookByISBN(this.isbn[i]))
-                console.log(booksAndAuthors)
+                let randomIndex = Math.floor(Math.random() * temporaryISBNList.length)
+                let bookAndAuthor = await getBookByISBN([temporaryISBNList[randomIndex]])
+                fourBooksAndAuthors.push(bookAndAuthor)
+                //This removes the isbn we just added  
+                temporaryISBNList.splice(randomIndex, 1)         
+                console.log(bookAndAuthor)
             }
+            console.log(fourBooksAndAuthors)
         },
         async getBook(isbn) {   
             book = await getBookByISBN(isbn)        
