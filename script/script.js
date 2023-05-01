@@ -1,5 +1,3 @@
-import ReadFile from './ReadFile.js'
-
 async function getBookByISBN(isbn) {
     const resp = await fetch(`https://openlibrary.org/isbn/${isbn}.json`)
 
@@ -104,9 +102,9 @@ const app = {
         async getBio() {
             this.bio = await getBioByOLID()
         },
-        async getISBN() {
-            this.isbn = await ReadFile.makeList()
-        }
+        // async getISBN() {
+        //     this.isbn = await ReadFile.makeList()
+        // }
     },
     // components: {
     // },
@@ -120,5 +118,4 @@ const app = {
     }
 }
 
-Vue.createApp(app).mount("#app")
-
+export default { getBookByISBN, getAuthorByOLID, getWorkbyOLID }
