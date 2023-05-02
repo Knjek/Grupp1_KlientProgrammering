@@ -1,24 +1,23 @@
 <script>
 import ReadFile from "../data/ReadFile.js"
 import { getBookAndAuthorByISBN, shuffle } from "../data/misc.js"
-import Book from "./Book.vue"
-import Author from "./Author.vue"
+import BookTitle from "./BookTitle.vue"
+import AuthorName from "./AuthorName.vue"
 
 export default {
     name: "BookAndAuthor",
     data() {
         return {
             isbn: [],
-            setOfFour: [],
+            shuffledList: [],
             book: "",
             correctAuthor: "",
             count: 0
         }
     },
     components: {
-        ReadFile,
-        Book,
-        Author,
+        BookTitle,
+        AuthorName,
     },
     methods: {
         async setup() {
@@ -28,14 +27,15 @@ export default {
              added to the other list we want to display (with 4 authors & 4 books) This way we won't
              add any duplicates) */
             let fourBooksAndAuthors = []
-
+            let allPromises = []
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.isbn.length)
-                let bookAndAuthor = await getBookAndAuthorByISBN([this.isbn[randomIndex]])
-                fourBooksAndAuthors.push(bookAndAuthor)
+                allPromises.push(getBookAndAuthorByISBN([this.isbn[randomIndex]]))
                 //This removes the isbn we just added  
                 this.isbn.splice(randomIndex, 1)
             }
+            console.log(allPromises)
+            fourBooksAndAuthors = await Promise.all(allPromises)
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
@@ -56,9 +56,9 @@ export default {
 <template>
     <div>
         <h1>guess!</h1>
-        <Book :title="book" />
+        <BookTitle :title="book" />
         <br><br><br>
-        <Author v-for="sets in shuffledList" :name="sets[1]" :value="sets[1]" @click="validate" />
+        <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" @click="validate" />
         <br>
         Your score is: {{ count }}
     </div>
