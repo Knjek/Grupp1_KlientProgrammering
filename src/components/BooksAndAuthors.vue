@@ -4,6 +4,7 @@ import { getBookAndAuthorByISBN, shuffle } from "../data/misc.js"
 import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
 import PageLoader from "./PageLoader.vue"
+import ErrorHandler from "./ErrorHandler.vue"
 
 export default {
     name: "BookAndAuthor",
@@ -15,18 +16,23 @@ export default {
             correctAuthor: "",
             count: 0,
             loading: true,
-            show: true
+            show: true,
+            error: false,
+            errorMsg: "",
         }
     },
     components: {
         BookTitle,
         AuthorName,
-        PageLoader
+        PageLoader,
+        ErrorHandler,
     },
     methods: {
-        async setup() {
+        async getISBNList() {
             //Program reads our text file and creates a list containing all the isbn numbers
             this.isbn = await ReadFile.makeList()
+        },
+        async setup() {
             /*Temporary list so we can manipulate (i.e. removing an isbn from the list after it's been
              added to the other list we want to display (with 4 authors & 4 books) This way we won't
              add any duplicates) */
@@ -38,7 +44,14 @@ export default {
                 //This removes the isbn we just added  
                 this.isbn.splice(randomIndex, 1)
             }
-            fourBooksAndAuthors = await Promise.all(allPromises)
+            try {
+                fourBooksAndAuthors = await Promise.all(allPromises)
+            } catch (Error) {
+                this.errorMsg = Error.message
+                this.loading = false
+                this.show = false
+                this.error = true
+            }
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
@@ -57,6 +70,7 @@ export default {
         },
     },
     async created() {
+        await this.getISBNList()
         await this.setup()
         this.loading = false
     },
@@ -75,6 +89,9 @@ export default {
             <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" @click="validate" />
             <br>
             Your score is: {{ count }}
+        </div>
+        <div v-if="error">
+            <ErrorHandler :msg="errorMsg" />
         </div>
     </div>
 </template>
