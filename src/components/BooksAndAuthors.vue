@@ -3,6 +3,7 @@ import ReadFile from "../data/ReadFile.js"
 import { getBookAndAuthorByISBN, shuffle } from "../data/misc.js"
 import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
+import PageLoader from "./PageLoader.vue"
 
 export default {
     name: "BookAndAuthor",
@@ -12,12 +13,15 @@ export default {
             shuffledList: [],
             book: "",
             correctAuthor: "",
-            count: 0
+            count: 0,
+            loading: true,
+            show: true
         }
     },
     components: {
         BookTitle,
         AuthorName,
+        PageLoader
     },
     methods: {
         async setup() {
@@ -34,32 +38,43 @@ export default {
                 //This removes the isbn we just added  
                 this.isbn.splice(randomIndex, 1)
             }
-            console.log(allPromises)
             fourBooksAndAuthors = await Promise.all(allPromises)
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
         },
         async validate(evt) {
+            this.show = false
+            this.loading = true
             if (evt.target.value === this.correctAuthor) {
                 this.count++
                 await this.setup()
+            } else {
+                await this.setup()
             }
+            this.loading = false
+            this.show = true
         },
     },
     async created() {
         await this.setup()
+        this.loading = false
     },
 }
 </script>
 
 <template>
     <div>
-        <h1>guess!</h1>
-        <BookTitle :title="book" />
-        <br><br><br>
-        <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" @click="validate" />
-        <br>
-        Your score is: {{ count }}
+        <div v-if="loading">
+            <PageLoader />
+        </div>
+        <div v-if="show">
+            <h1>guess!</h1>
+            <BookTitle :title="book" />
+            <br><br><br>
+            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" @click="validate" />
+            <br>
+            Your score is: {{ count }}
+        </div>
     </div>
 </template>
