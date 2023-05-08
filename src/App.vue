@@ -1,9 +1,12 @@
 <script setup>
   import BooksAndAuthors from "./components/BooksAndAuthors.vue"
+  import { RouterView } from 'vue-router'
 </script>
 
 <template>
-       <BooksAndAuthors/>
+    <div>
+       <RouterView></RouterView>
+    </div>
 </template>
 
 <style>
