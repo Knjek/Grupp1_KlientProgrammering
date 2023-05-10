@@ -16,7 +16,7 @@ export default {
             correctAuthor: "",
             count: 0,
             loading: true,
-            show: true,
+            show: false,
             error: false,
             errorMsg: "",
         }
@@ -63,6 +63,7 @@ export default {
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
+            this.show = true
         },
         async validate(evt) {
             this.show = false
