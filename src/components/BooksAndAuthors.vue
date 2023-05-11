@@ -46,7 +46,7 @@ export default {
             let fourBooksAndAuthors = []
             try {
                 fourBooksAndAuthors = await Promise.all(allPromises)
-       
+
                 // Check if the author or book already exist in the list
                 while (this.containsDuplicate(fourBooksAndAuthors)) {
                     // Almost same code as above... refactor?
@@ -63,19 +63,20 @@ export default {
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
+            this.loading = false
             this.show = true
         },
         async validate(evt) {
-            this.show = false
             this.loading = true
             if (evt.target.value === this.correctAuthor) {
                 this.count++
-                await this.setup()
+                evt.target.classList.add('btn-success')
+                
             } else {
-                await this.setup()
+                evt.target.classList.add('btn-danger')
             }
-            this.loading = false
-            this.show = true
+            await this.setup()
+            evt.target.classList.remove('btn-danger', 'btn-success')
         },
         containsDuplicate(fourBooksAndAuthors) {
             const uniqueElements = new Set();
@@ -103,6 +104,9 @@ export default {
             }
             return false
         },
+        delay(time) {
+            return new Promise(resolve => setTimeout(resolve, time));
+        },
     },
     async created() {
         await this.getISBNList()
@@ -115,20 +119,27 @@ export default {
 
 <template>
     <div>
-        <div v-if="loading">
-            <PageLoader />
+        <div v-if="show" class="container">
+            <div class="row">
+                <h1 align="center">Guess the author!</h1>
+                <BookTitle align="center" :title="book" />
+                <div class="btn-group gap-2 my-2">
+                    <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
+                    @click="validate" />
+                </div>
+                <div class="my-2">
+                    <p align="center">
+                        Your score is: {{ count }}
+                    </p>
+                </div>
+            </div>
         </div>
-        <div v-if="show">
-            <h1>guess!</h1>
-            <BookTitle :title="book" />
-            <br><br><br>
-            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
-                @click="validate" />
-            <br>
-            Your score is: {{ count }}
+        <div v-if="loading">
+            <PageLoader align="center" />
         </div>
         <div v-if="error">
-            <ErrorHandler :msg="errorMsg" />
+            <ErrorHandler align="center" :msg="errorMsg" />
         </div>
     </div>
 </template>
+
