@@ -8,6 +8,13 @@ import ErrorHandler from "./ErrorHandler.vue"
 
 export default {
     name: "BookAndAuthor",
+    props: {
+        threeView: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
+    },
     data() {
         return {
             isbn: [],
@@ -19,6 +26,7 @@ export default {
             show: true,
             error: false,
             errorMsg: "",
+            wrongGuesses: 0,
         }
     },
     components: {
@@ -63,6 +71,8 @@ export default {
                 this.count++
                 await this.setup()
             } else {
+                this.wrongGuesses++
+                console.log(this.wrongGuesses)
                 await this.setup()
             }
             this.loading = false
@@ -83,12 +93,13 @@ export default {
             <PageLoader />
         </div>
         <div v-if="show">
-            <h1>guess!</h1>
             <BookTitle :title="book" />
             <br><br><br>
-            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" @click="validate" />
+            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
+                @click="validate" />
             <br>
             Your score is: {{ count }}
+            <p v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
         </div>
         <div v-if="error">
             <ErrorHandler :msg="errorMsg" />
