@@ -11,6 +11,7 @@ export default {
 </script>
 
 <template>
+  <h1>Guess!</h1>
   <BooksAndAuthors/>
-  <router-link to="/other">Other</router-link> 
+  <router-link to="/max3">Max 3 errors</router-link> 
 </template>

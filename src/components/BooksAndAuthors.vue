@@ -8,6 +8,13 @@ import ErrorHandler from "./ErrorHandler.vue"
 
 export default {
     name: "BookAndAuthor",
+    props: {
+        threeView: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
+    },
     data() {
         return {
             isbn: [],
@@ -19,6 +26,7 @@ export default {
             show: false,
             error: false,
             errorMsg: "",
+            wrongGuesses: 0,
         }
     },
     components: {
@@ -73,7 +81,11 @@ export default {
                 evt.target.classList.add('btn-success')
                 
             } else {
+
+                this.wrongGuesses++
+                console.log(this.wrongGuesses)
                 evt.target.classList.add('btn-danger')
+
             }
             await this.setup()
             evt.target.classList.remove('btn-danger', 'btn-success')
@@ -134,6 +146,15 @@ export default {
                 </div>
             </div>
         </div>
+
+        <div v-if="show">
+            <BookTitle :title="book" />
+            <br><br><br>
+            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
+                @click="validate" />
+            <br>
+            Your score is: {{ count }}
+            <p v-if="threeView">Wrong guesses: {{ wrongGuesses }} </p>
         <div v-if="loading">
             <PageLoader align="center" />
         </div>
