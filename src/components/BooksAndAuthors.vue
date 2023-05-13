@@ -81,7 +81,7 @@ export default {
                 evt.target.classList.add('btn-success')
                 
             } else {
-  
+                this.wrongGuesses++
                 evt.target.classList.add('btn-danger')
             }
             await this.setup()
