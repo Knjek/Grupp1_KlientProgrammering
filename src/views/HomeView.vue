@@ -13,5 +13,7 @@ export default {
 <template>
   <h1>Guess!</h1>
   <BooksAndAuthors/>
-  <router-link to="/max3">Max 3 errors</router-link> 
+  <router-link to="/max3" class="btn btn-outline-success btn-sm" >Max 3 errors</router-link> 
+  <router-link to="/2player" class="btn btn-outline-danger btn-sm ">2-player</router-link>
+  <router-link to="/timer" class="btn btn-outline-warning btn-sm">Timer</router-link>
 </template>
