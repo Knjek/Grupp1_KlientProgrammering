@@ -81,8 +81,7 @@ export default {
                 evt.target.classList.add('btn-success')
                 
             } else {
-                this.wrongGuesses++
-                console.log(this.wrongGuesses)
+  
                 evt.target.classList.add('btn-danger')
             }
             await this.setup()
@@ -129,23 +128,17 @@ export default {
 
 <template>
     <div>
-        <div v-if="show" class="container">
-            <div class="row">
-                <h1 align="center">Guess the author!</h1>
-                <BookTitle align="center" :title="book" />
-                <div class="btn-group gap-2 my-2">
-                    <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
-                    @click="validate" />
-                </div>
-                <div class="my-2">
-                    <p align="center">
-                        Your score is: {{ count }}
-                    </p>
-                </div>
-            </div>
-        </div>
         <div v-if="loading">
-            <PageLoader align="center" />
+            <PageLoader />
+        </div>
+        <div v-if="show">
+            <BookTitle :title="book" />
+            <br><br><br>
+            <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
+                @click="validate" />
+            <br>
+            Your score is: {{ count }}
+            <p v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
         </div>
         <div v-if="error">
             <ErrorHandler align="center" :msg="errorMsg" />
