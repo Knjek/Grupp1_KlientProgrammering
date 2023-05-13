@@ -1,6 +1,6 @@
 const ReadFile = {
     async readFile() {
-        const resp = await fetch("/src/assets/isbn.txt")
+        const resp = await fetch("/isbn.txt")
     
         if (!resp.ok) {
             throw new Error("Something wrong when reading from file.. " + resp.status)
