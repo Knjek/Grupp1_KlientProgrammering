@@ -27,7 +27,7 @@ export default {
             book: "",
             correctAuthor: "",
             score: 0,
-            maxGuesses: 5,
+            maxGuesses: 10,
             guesses: 0,
             loading: true,
             show: false,
@@ -35,6 +35,7 @@ export default {
             errorMsg: "",
             tenGuesses: false,
             wrongGuesses: 0,
+            msg: "",
         }
     },
     components: {
@@ -102,20 +103,22 @@ export default {
                 this.wrongGuesses++
                 evt.target.classList.add('btn-danger')
             }
-
-
+            
+            await this.setup()
+            evt.target.classList.remove('btn-danger', 'btn-success')
+       
             if (this.threeView) {
                 if (this.wrongGuesses >= 3) {
-                    
+                    this.tenGuesses = true
+                    this.show = false
+                    this.msg = "You got three strikes, you're out!"
                 }
             }
 
-            await this.setup()
-            evt.target.classList.remove('btn-danger', 'btn-success')
             if (this.guesses === this.maxGuesses) {
                 this.tenGuesses = true
                 this.show = false
-                console.log("You have used all your guesses.")
+                this.msg = "You have used all your guesses."
             }
         },
         containsDuplicate(fourBooksAndAuthors) {
@@ -124,8 +127,8 @@ export default {
                 console.log(BookAndAuthor[1])
                 uniqueElements.add(BookAndAuthor[1])
             }
-            console.log(fourBooksAndAuthors.length + "authors in list")
-            console.log(uniqueElements.size + "unique authors")
+            console.log(fourBooksAndAuthors.length + " authors in list")
+            console.log(uniqueElements.size + " unique authors")
             if (Number(uniqueElements.size) !== Number(fourBooksAndAuthors.length)) {
                 for (const name of uniqueElements) {
                     let count = 0
@@ -159,6 +162,7 @@ export default {
         <div v-if="show" class="container">
             <div class="row">
                 <h1 align="center"> {{ heading }}</h1>
+                <p align="center">You have a maximum of ten guesses.</p>
                 <BookTitle align="center" :title="book" />
                 <div>
                     <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" class="my-2 col-12 col-md-6 col-lg-3 border"
@@ -168,7 +172,7 @@ export default {
                     <p align="center">
                         Your score is: {{ score }}
                     </p>
-                    <p v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
+                    <p align="center" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
                 </div>
             </div>
         </div>
@@ -179,7 +183,7 @@ export default {
             <ErrorHandler align="center" :msg="errorMsg" />
         </div>
         <div v-if="tenGuesses">
-            <GuessHandler msg="You are out of guesses!" :guesses="guesses" :score="score" />
+            <GuessHandler :msg="msg" :guesses="guesses" :score="score" />
         </div>
     </div>
 </template>
