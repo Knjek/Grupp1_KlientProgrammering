@@ -17,5 +17,6 @@ export default {
       <router-link to="/" class="btn btn-outline-primary btn-sm">Home</router-link>
       <router-link to="/max3" class="btn btn-outline-success btn-sm" >Max 3 errors</router-link>
       <router-link to="/timer" class="btn btn-outline-warning btn-sm">Timer</router-link>
+      <router-link to="/anagram" class="btn btn-outline-success btn-sm">Author anagram quiz!</router-link>
     </div>
   </template>
