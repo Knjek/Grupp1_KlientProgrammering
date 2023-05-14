@@ -13,6 +13,10 @@ export default {
             type: Boolean,
             required: true,
             default: false
+        },
+        heading: {
+            type: String,
+            default: "Guess the author"
         }
     },
     data() {
@@ -84,6 +88,13 @@ export default {
                 this.wrongGuesses++
                 evt.target.classList.add('btn-danger')
             }
+
+            if (this.threeView) {
+                if (this.wrongGuesses >= 3) {
+                    
+                }
+            }
+
             await this.setup()
             evt.target.classList.remove('btn-danger', 'btn-success')
         },
@@ -130,11 +141,11 @@ export default {
     <div>
         <div v-if="show" class="container">
             <div class="row">
-                <h1 align="center">Guess the author!</h1>
+                <h1 align="center"> {{ heading }}</h1>
                 <BookTitle align="center" :title="book" />
-                <div class="btn-group gap-2 my-2">
-                    <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]"
-                        @click="validate" />
+                <div>
+                    <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" class="my-2 col-12 col-md-6 col-lg-3 border"
+                        @click="validate" /> 
                 </div>
                 <div class="my-2">
                     <p align="center">
@@ -153,3 +164,6 @@ export default {
     </div>
 </template>
 
+<style>
+
+</style>
