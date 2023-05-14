@@ -5,6 +5,7 @@ import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
 import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
+import GuessHandler from "./GuessHandler.vue"
 
 export default {
     name: "BookAndAuthor",
@@ -21,11 +22,14 @@ export default {
             shuffledList: [],
             book: "",
             correctAuthor: "",
-            count: 0,
+            score: 0,
+            maxGuesses: 5,
+            guesses: 0,
             loading: true,
             show: false,
             error: false,
             errorMsg: "",
+            tenGuesses: false,
             wrongGuesses: 0,
         }
     },
@@ -34,6 +38,7 @@ export default {
         AuthorName,
         PageLoader,
         ErrorHandler,
+        GuessHandler,
     },
     methods: {
         async getISBNList() {
@@ -76,16 +81,31 @@ export default {
         },
         async validate(evt) {
             this.loading = true
+            //Here in the if-and else, your guesses-variable should be increased by 1
+            //Everytime you click on an author you make on guess = guesses should increase by 1
+
+
+
             if (evt.target.value === this.correctAuthor) {
-                this.count++
+                this.guesses++;
+                this.score++
                 evt.target.classList.add('btn-success')
 
+                // allow the user to make a guess
+
             } else {
+                this.guesses++;
                 this.wrongGuesses++
                 evt.target.classList.add('btn-danger')
             }
+
             await this.setup()
             evt.target.classList.remove('btn-danger', 'btn-success')
+            if (this.guesses === this.maxGuesses) {
+                this.tenGuesses = true
+                this.show = false
+                console.log("You have used all your guesses.")
+            }
         },
         containsDuplicate(fourBooksAndAuthors) {
             const uniqueElements = new Set();
@@ -93,8 +113,8 @@ export default {
                 console.log(BookAndAuthor[1])
                 uniqueElements.add(BookAndAuthor[1])
             }
-            console.log(fourBooksAndAuthors.length)
-            console.log(uniqueElements.size)
+            console.log(fourBooksAndAuthors.length + "authors in list")
+            console.log(uniqueElements.size + "unique authors")
             if (Number(uniqueElements.size) !== Number(fourBooksAndAuthors.length)) {
                 for (const name of uniqueElements) {
                     let count = 0
@@ -107,11 +127,9 @@ export default {
                             }
                         }
                     }
-
                 }
                 return true
             }
-            return false
         },
         delay(time) {
             return new Promise(resolve => setTimeout(resolve, time));
@@ -123,7 +141,6 @@ export default {
         this.loading = false
     },
 }
-
 </script>
 
 <template>
@@ -138,17 +155,20 @@ export default {
                 </div>
                 <div class="my-2">
                     <p align="center">
-                        Your score is: {{ count }}
+                        Your score is: {{ score }}
                     </p>
                     <p v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
                 </div>
             </div>
-            <div v-if="loading">
-                <PageLoader align="center" />
-            </div>
-            <div v-if="error">
-                <ErrorHandler align="center" :msg="errorMsg" />
-            </div>
+        </div>
+        <div v-if="loading">
+            <PageLoader align="center" />
+        </div>
+        <div v-if="error">
+            <ErrorHandler align="center" :msg="errorMsg" />
+        </div>
+        <div v-if="tenGuesses">
+            <GuessHandler msg="You are out of guesses!" :guesses="guesses" :score="score" />
         </div>
     </div>
 </template>
