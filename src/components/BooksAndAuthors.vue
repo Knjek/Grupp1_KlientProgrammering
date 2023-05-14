@@ -140,6 +140,7 @@ export default {
                     <p align="center">
                         Your score is: {{ count }}
                     </p>
+                    <p v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
                 </div>
             </div>
             <div v-if="loading">
