@@ -52,7 +52,27 @@ async function getAuthorByOLID(authorOLID) {
     else {
         return json.personal_name
     }
+}
 
+export async function getTrendingYearly(page) {
+    const resp = await fetch(`https://openlibrary.org/trending/yearly.json?page=${page}`)
+
+    if (!resp.ok) {
+        throw new Error("Something went wrong when fetching data.")
+    }
+
+    const json = await resp.json()
+
+    const listOfBooksAndAuthors = []
+    for (const obj of json.works) {
+        const list = []
+        list.push(obj.title)
+        list.push(obj.author_name[0])
+        listOfBooksAndAuthors.push(list)
+    }
+
+    console.log('done loading')
+    return listOfBooksAndAuthors
 }
 
 export function shuffle(array) {
