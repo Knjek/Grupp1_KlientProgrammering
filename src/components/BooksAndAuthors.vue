@@ -200,36 +200,39 @@ export default {
     <div>
         <div v-if="show" class="container">
             <div class="row">
-                <h1 align="center"> {{ heading }}</h1>
-                <p align="center">You have a maximum of ten guesses.</p>
-                <BookTitle align="center" :title="book" />
+                <h1 class="center-content"> {{ heading }}</h1>
+                <p class="center-content">You have a maximum of ten guesses.</p>
+                <BookTitle class="center-content" :title="book" />
                 <div>
                     <AuthorName v-for="sets in shuffledList" :key="sets.author_name" :name="sets[1]" :value="sets[1]"
                         class="my-2 col-12 col-md-6 col-lg-3 border" @click="validate" />
                 </div>
                 <div class="my-2">
-                    <p align="center">
+                    <p class="center-content">
                         Your score is: {{ score }}
                     </p>
-                    <p align="center" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
+                    <p class="center-content" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
                 </div>
             </div>
         </div>
-        <div v-if="loading">
+        <div class="center-content" v-if="loading">
             <h2>{{ msg }}</h2>
-            <PageLoader align="center"></PageLoader>
+            <PageLoader ></PageLoader>
         </div>
         <div v-if="error">
-            <ErrorHandler align="center" :msg="errorMsg" />
+            <ErrorHandler class="center-content" :msg="errorMsg" />
         </div>
         <div v-if="tenGuesses">
-            <GuessHandler :msg="msg" :guesses="guesses" :score="score" />
+            <GuessHandler class="center-content" :msg="msg" :guesses="guesses" :score="score" />
         </div>
     </div>
 </template>
 
 <style>
 .center-content {
+    text-align: center;
+}
+.center-content > * {
     text-align: center;
 }
 </style>
