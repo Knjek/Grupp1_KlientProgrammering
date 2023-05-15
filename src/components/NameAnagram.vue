@@ -35,7 +35,7 @@ export default {
                 await this.getISBNList()
                 this.randomIndex = Math.floor(Math.random() * this.isbn.length)
                 this.titleAuthor = await (getBookAndAuthorByISBN([this.isbn[this.randomIndex]]))
-                this.correctSpelledAuthorName = this.titleAuthor[1]
+                this.correctSpelledAuthorName= this.titleAuthor[1].toUpperCase()
                 console.log(this.correctSpelledAuthorName)
                 this.shuffledAuthorName = this.shuffleWord(this.correctSpelledAuthorName)
                 console.log(this.shuffledAuthorName)
@@ -63,11 +63,12 @@ export default {
 
         async validate() {
             this.loading = true
-            if (this.userGuess === this.correctSpelledAuthorName) {
+            if (this.userGuess.toLowerCase() === this.correctSpelledAuthorName.toLowerCase()) {
                 this.count++
                 this.msg = "Aweseome dude!"
 
             } else {
+                this.wrongGuesses++
                 this.msg = "U suck..."
             }
             this.userGuess = this.placeholder
