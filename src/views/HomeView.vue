@@ -3,11 +3,11 @@ import BooksAndAuthors from "../components/BooksAndAuthors.vue"
 
 export default {
   components: {   
-    BooksAndAuthors
-  }
+    BooksAndAuthors,
+  },
 }
 </script>
 
 <template>
-  <BooksAndAuthors heading="Guess the author!"/>
+  <BooksAndAuthors :three-view="false" heading="Guess the author!"/>
 </template>
