@@ -35,7 +35,7 @@ export default {
                 await this.getISBNList()
                 this.randomIndex = Math.floor(Math.random() * this.isbn.length)
                 this.titleAuthor = await (getBookAndAuthorByISBN([this.isbn[this.randomIndex]]))
-                this.correctSpelledAuthorName= this.titleAuthor[1].toUpperCase()
+                this.correctSpelledAuthorName = this.titleAuthor[1].toUpperCase()
                 console.log(this.correctSpelledAuthorName)
                 this.shuffledAuthorName = this.shuffleWord(this.correctSpelledAuthorName)
                 console.log(this.shuffledAuthorName)
@@ -63,7 +63,13 @@ export default {
 
         async validate() {
             this.loading = true
-            if (this.userGuess.toLowerCase() === this.correctSpelledAuthorName.toLowerCase()) {
+            this.userGuess = this.userGuess.toLowerCase().replace(/[\s.]/g, '');
+            this.correctSpelledAuthorName = this.correctSpelledAuthorName.toLowerCase().replace(/[\s.]/g, '');
+
+            if (this.userGuess === "") {
+                this.msg = "You have to guess something, come on!"
+            }
+            else if (this.userGuess === this.correctSpelledAuthorName) {
                 this.count++
                 this.msg = "Aweseome dude!"
 
@@ -85,7 +91,7 @@ export default {
 <template>
     <div>
         <div v-if="show" align="center">
-            <h3 >{{ shuffledAuthorName }}</h3>
+            <h3>{{ shuffledAuthorName }}</h3>
             <p>Guess the author name!</p>
             <input type="text" placeholder="Write the name here" v-model="userGuess">
             <input type="button" value="Check if correct" @click="validate">
