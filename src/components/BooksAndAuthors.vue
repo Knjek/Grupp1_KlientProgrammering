@@ -39,7 +39,9 @@ export default {
             wrongGuesses: 0,
             msg: "",
             isFetchLoaded: false,
-            pageNumber: 0,
+
+            //seems like there are no more than 8 pages
+            pageNumber: 4,
         }
     },
     components: {
@@ -93,8 +95,11 @@ export default {
 
         async run() {
             console.log("using run")
-            if (this.listOfBooksAndAuthors.length < 100) {
+
+            // this should only run once when under 100
+            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber > 8) {
                 console.log("fetching more books and authors")
+                this.pageNumber = 0
                 this.fetchListOfBooksAndAuthors()
             }
             // wait a second before changing authors so the player can see the change of colors
@@ -195,11 +200,17 @@ export default {
         },
 
         async fetchListOfBooksAndAuthors() {
-            this.pageNumber++
-            const trendingYearlyList = await getTrendingYearly(this.pageNumber)
-            this.listOfBooksAndAuthors.push(...trendingYearlyList)
-            this.isFetchLoaded = true
-            console.log("isFetchLoaded: " + this.isFetchLoaded)
+            while (this.pageNumber <= 8) {
+                this.pageNumber++
+                const trendingYearlyList = await getTrendingYearly(this.pageNumber)
+                this.listOfBooksAndAuthors.push(...trendingYearlyList)
+
+                if(!this.isFetchLoaded) {
+                    this.isFetchLoaded = true
+                    console.log("isFetchLoaded: " + this.isFetchLoaded)
+                }
+                console.log("Loaded page no. " + this.pageNumber)
+            }
         },
 
         persist() {
@@ -239,8 +250,9 @@ export default {
                 <p class="center-content">You have a maximum of ten guesses.</p>
                 <BookTitle class="center-content" :title="book" />
                 <div>
+                    <!-- should be button group or radio button to not be able to click all buttons -->
                     <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
-                        class="my-2 col-12 col-md-6 col-lg-3 border" @click="validate" />
+                        class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate" />
                 </div>
                 <div class="my-2">
                     <p class="center-content">
