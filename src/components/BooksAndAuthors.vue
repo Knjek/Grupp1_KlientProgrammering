@@ -41,7 +41,7 @@ export default {
             isFetchLoaded: false,
 
             //seems like there are no more than 8 pages
-            pageNumber: 4,
+            pageNumber: 0,
         }
     },
     components: {
@@ -97,7 +97,7 @@ export default {
             console.log("using run")
 
             // this should only run once when under 100
-            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber > 8) {
+            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber >= 10) {
                 console.log("fetching more books and authors")
                 this.pageNumber = 0
                 this.fetchListOfBooksAndAuthors()
@@ -200,7 +200,7 @@ export default {
         },
 
         async fetchListOfBooksAndAuthors() {
-            while (this.pageNumber <= 8) {
+            while (this.pageNumber < 10) {
                 this.pageNumber++
                 const trendingYearlyList = await getTrendingYearly(this.pageNumber)
                 this.listOfBooksAndAuthors.push(...trendingYearlyList)
