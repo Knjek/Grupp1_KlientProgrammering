@@ -1,4 +1,39 @@
-@use '~bootstrap/scss/bootstrap' with (
-    $enable-rounded: false,
+@use '~bootstrap/scss/bootstrap' with ($enable-rounded: false,
     $dropdown-link-hover-bg: rgb(255, 200, 0),
 );
+
+.center-content {
+    text-align: center;
+}
+
+.center-content>* {
+    text-align: center;
+}
+
+.medium {
+    display: none;
+}
+
+.big {
+    display: none;
+}
+
+@media screen and (min-width: 576px) {
+    .medium {
+        display: flex;
+    }
+
+    .small {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .big {
+        display: flex;
+    }
+
+    .medium {
+        display: none;
+    }
+}
