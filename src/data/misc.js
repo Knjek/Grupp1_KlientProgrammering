@@ -71,7 +71,7 @@ export async function getTrendingYearly(page) {
     for (const obj of json.works) {
         const list = []
         list.push(obj.title ?? "<unknown>")
-        list.push(obj.author_name[0] ?? "<unknown>")
+        list.push(obj.author_name?.at(0) ?? "<unknown>")
         listOfBooksAndAuthors.push(list)
     }
 
