@@ -63,7 +63,9 @@ export default {
 
         async validate() {
             this.loading = true
-            this.userGuess = this.userGuess.toLowerCase().replace(/[\s.]/g, '');
+            if (this.userGuess !== undefined) {               
+                this.userGuess = this.userGuess.toLowerCase().replace(/[\s.]/g, '');
+            }           
             this.correctSpelledAuthorName = this.correctSpelledAuthorName.toLowerCase().replace(/[\s.]/g, '');
 
             if (this.userGuess === "") {
