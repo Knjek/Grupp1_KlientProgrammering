@@ -36,7 +36,7 @@ export default {
     <nav v-else class="row">
         <div>
             <button type="button" class="btn btn-warning"><router-link to="/"
-                    class="btn btn-outline-dark btn-sm col-sm">Author Quiz</router-link></button>
+                    class="btn btn-outline-dark">Author Quiz</router-link></button>
             <button type="button" class="btn btn-success"><router-link to="/anagram"
                     class="btn btn-outline-dark btn-sm col-sm">Anagram</router-link></button>
         </div>
