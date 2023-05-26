@@ -1,11 +1,12 @@
 <script>
 import ReadFile from "../data/ReadFile.js"
-import { getBookAndAuthorByISBN, shuffle } from "../data/misc.js"
+import { getBookAndAuthorByISBN, shuffle, getTrendingYearly } from "../data/misc.js"
 import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
 import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
 import GuessHandler from "./GuessHandler.vue"
+
 
 export default {
     name: "BookAndAuthor",
@@ -23,11 +24,12 @@ export default {
     data() {
         return {
             isbn: [],
+            listOfBooksAndAuthors: [],
             shuffledList: [],
             book: "",
             correctAuthor: "",
             score: 0,
-            maxGuesses: 10,
+            maxGuesses: 100,
             guesses: 0,
             loading: true,
             show: false,
@@ -36,6 +38,10 @@ export default {
             tenGuesses: false,
             wrongGuesses: 0,
             msg: "",
+            isFetchLoaded: false,
+
+            //seems like there are no more than 8 pages
+            pageNumber: 4,
         }
     },
     components: {
@@ -50,26 +56,27 @@ export default {
             //Program reads our text file and creates a list containing all the isbn numbers
             this.isbn = await ReadFile.makeList()
         },
+
         async setup() {
-            /*Temporary list so we can manipulate (i.e. removing an isbn from the list after it's been
-             added to the other list we want to display (with 4 authors & 4 books) This way we won't
-             add any duplicates) */
-            let allPromises = []
+            console.log("using setup")
+            const allPromises = []
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.isbn.length)
-                allPromises.push(getBookAndAuthorByISBN([this.isbn[randomIndex]]))
-                //This removes the isbn we just added  
+                allPromises.push(getBookAndAuthorByISBN(this.isbn[randomIndex]))
+                //This removes the book and author from the list so it won't come again.  
                 this.isbn.splice(randomIndex, 1)
             }
+            await this.delay(1000)
             let fourBooksAndAuthors = []
+
             try {
                 fourBooksAndAuthors = await Promise.all(allPromises)
 
                 // Check if the author or book already exist in the list
                 while (this.containsDuplicate(fourBooksAndAuthors)) {
                     // Almost same code as above... refactor?
-                    let randomIndex = Math.floor(Math.random() * this.isbn.length)
-                    const newBookAuthor = await getBookAndAuthorByISBN([this.isbn[randomIndex]])
+                    let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
+                    const newBookAuthor = await getBookAndAuthorByISBN(this.isbn[randomIndex])
                     fourBooksAndAuthors.push(newBookAuthor)
                 }
             } catch (Error) {
@@ -78,35 +85,74 @@ export default {
                 this.show = false
                 this.error = true
             }
+
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
             this.loading = false
             this.show = true
         },
+
+        async run() {
+            console.log("using run")
+
+            // this should only run once when under 100
+            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber > 8) {
+                console.log("fetching more books and authors")
+                this.pageNumber = 0
+                this.fetchListOfBooksAndAuthors()
+            }
+            // wait a second before changing authors so the player can see the change of colors
+            await this.delay(1000)
+
+            const fourBooksAndAuthors = []
+            console.log("Number of books and authors stored: " + this.listOfBooksAndAuthors.length)
+            for (let i = 0; i < 4; i++) {
+                let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
+                fourBooksAndAuthors.push(this.listOfBooksAndAuthors[randomIndex])
+                //This removes the book and author from the list so it won't come again.  
+                this.listOfBooksAndAuthors.splice(randomIndex, 1)
+            }
+
+            while (this.containsDuplicate(fourBooksAndAuthors)) {
+                // Almost same code as above... refactor?
+                let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
+                const newBookAuthor = this.listOfBooksAndAuthors[randomIndex]
+                fourBooksAndAuthors.push(newBookAuthor)
+            }
+            this.persist()
+            this.book = fourBooksAndAuthors[0][0]
+            this.correctAuthor = fourBooksAndAuthors[0][1]
+            this.shuffledList = shuffle(fourBooksAndAuthors)
+            this.loading = false
+            this.show = true
+        },
+
         async validate(evt) {
             this.loading = true
-            //Here in the if-and else, your guesses-variable should be increased by 1
-            //Everytime you click on an author you make on guess = guesses should increase by 1
 
-
-
+            // comparing the target button with correct answer
             if (evt.target.value === this.correctAuthor) {
                 this.guesses++;
                 this.score++
+                this.msg = "Great!"
                 evt.target.classList.add('btn-success')
-
-                // allow the user to make a guess
-
             } else {
                 this.guesses++;
                 this.wrongGuesses++
+                this.msg = "Noooo!"
                 evt.target.classList.add('btn-danger')
             }
-            
-            await this.setup()
+
+            // if the bigger fetch from the api is still not done, use the smaller local one (setup)
+            if (this.listOfBooksAndAuthors.length > 50) {     
+                await this.run()
+            } else {
+                await this.setup()
+            }
+
             evt.target.classList.remove('btn-danger', 'btn-success')
-       
+
             if (this.threeView) {
                 if (this.wrongGuesses >= 3) {
                     this.tenGuesses = true
@@ -121,12 +167,14 @@ export default {
                 this.msg = "You have used all your guesses."
             }
         },
+
         containsDuplicate(fourBooksAndAuthors) {
             const uniqueElements = new Set();
             for (const BookAndAuthor of fourBooksAndAuthors) {
-                console.log(BookAndAuthor[1])
+                // console.log(BookAndAuthor[0] + " by " + BookAndAuthor[1])
                 uniqueElements.add(BookAndAuthor[1])
             }
+            // printing out list-sizes
             console.log(fourBooksAndAuthors.length + " authors in list")
             console.log(uniqueElements.size + " unique authors")
             if (Number(uniqueElements.size) !== Number(fourBooksAndAuthors.length)) {
@@ -144,15 +192,52 @@ export default {
                 }
                 return true
             }
+            return false
         },
+
         delay(time) {
             return new Promise(resolve => setTimeout(resolve, time));
         },
+
+        async fetchListOfBooksAndAuthors() {
+            while (this.pageNumber <= 8) {
+                this.pageNumber++
+                const trendingYearlyList = await getTrendingYearly(this.pageNumber)
+                this.listOfBooksAndAuthors.push(...trendingYearlyList)
+
+                if(!this.isFetchLoaded) {
+                    this.isFetchLoaded = true
+                    console.log("isFetchLoaded: " + this.isFetchLoaded)
+                }
+                console.log("Loaded page no. " + this.pageNumber)
+            }
+        },
+
+        persist() {
+            localStorage.listOfBooksAndAuthors = JSON.stringify(this.listOfBooksAndAuthors)
+            console.log('persisted to local storage')
+        },
+
     },
     async created() {
-        await this.getISBNList()
-        await this.setup()
+        console.log("created called")
+        if (localStorage.listOfBooksAndAuthors) {
+            this.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
+            console.log('pushing from local storage')
+        }
+        let load
+        if (this.listOfBooksAndAuthors.length === 0) {
+            load = this.fetchListOfBooksAndAuthors()
+            await this.getISBNList()
+            await this.setup()
+        } else {
+            await this.run()
+        }
         this.loading = false
+        await load
+    },
+    mounted() {
+        console.log("mounted called")
     },
 }
 </script>
@@ -161,33 +246,41 @@ export default {
     <div>
         <div v-if="show" class="container">
             <div class="row">
-                <h1 align="center"> {{ heading }}</h1>
-                <p align="center">You have a maximum of ten guesses.</p>
-                <BookTitle align="center" :title="book" />
+                <h1 class="center-content"> {{ heading }}</h1>
+                <p class="center-content">You have a maximum of ten guesses.</p>
+                <BookTitle class="center-content" :title="book" />
                 <div>
-                    <AuthorName v-for="sets in shuffledList" :key="sets.author" :name="sets[1]" :value="sets[1]" class="my-2 col-12 col-md-6 col-lg-3 border"
-                        @click="validate" /> 
+                    <!-- should be button group or radio button to not be able to click all buttons -->
+                    <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
+                        class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate" />
                 </div>
                 <div class="my-2">
-                    <p align="center">
+                    <p class="center-content">
                         Your score is: {{ score }}
                     </p>
-                    <p align="center" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
+                    <p class="center-content" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
                 </div>
             </div>
         </div>
-        <div v-if="loading">
-            <PageLoader align="center" />
+        <div class="center-content" v-if="loading">
+            <h2>{{ msg }}</h2>
+            <PageLoader></PageLoader>
         </div>
-        <div v-if="error">
-            <ErrorHandler align="center" :msg="errorMsg" />
+        <div class="center-content m-2" v-if="error">
+            <ErrorHandler  :msg="errorMsg" />
         </div>
         <div v-if="tenGuesses">
-            <GuessHandler :msg="msg" :guesses="guesses" :score="score" />
+            <GuessHandler class="center-content" :msg="msg" :guesses="guesses" :score="score" />
         </div>
     </div>
 </template>
 
 <style>
+.center-content {
+    text-align: center;
+}
 
+.center-content>* {
+    text-align: center;
+}
 </style>
