@@ -102,7 +102,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="anagram">
         <div v-if="show" align="center">
             <h3>{{ shuffledAuthorName }}</h3>
             <p>Guess the author name!</p>
