@@ -5,11 +5,12 @@
 #app {
     background-color: rgba(0, 0, 0, 0.365);
     align-self: baseline;
-    margin: calc(1.5625vw + 2em); 
+    margin: calc(1.5625vw + 2em);
     padding: calc(1.2625vw + 1em);
 }
 
 body {
+    font-family: "Trirong", serif;
     align-items: center;
     background-image: url("../../dist/testbg4.jpg");
     background-size: 30%;
@@ -19,16 +20,19 @@ body {
 .nav-container {
     display: flex;
 }
+
 nav.row .btn {
-    margin: calc(1.5625vw - 5px);   
+    margin: calc(1.5625vw - 5px);
     margin-bottom: 0;
     flex-grow: 1;
     flex-shrink: 0;
 }
+
 .anagram {
     padding: calc(1.9625vw + 1em);
     background-color: azure;
 }
+
 .quiz {
     padding: calc(1.9625vw + 1em);
     background-color: whitesmoke;
@@ -36,10 +40,10 @@ nav.row .btn {
 
 html,
 .btn {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;   
+    font-family: "Trirong", serif;
     color: black;
     border-bottom: none;
-    border-radius: 10px     10px      0           0;
+    border-radius: 10px 10px 0 0;
 }
 
 .btn-outline-warning {
@@ -58,3 +62,6 @@ html,
     background-color: rgb(166, 223, 147);
 }
 
+#authorname {
+    background-color: rgb(246, 246, 199);
+}

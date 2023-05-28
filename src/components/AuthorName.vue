@@ -1,5 +1,5 @@
 <template>
-    <input type="button" class="btn btn-primary" :value="name">
+    <input type="button" class="btn btn-primary" :value="name" id="authorname">
 </template>
 
 <script>
@@ -9,5 +9,6 @@ export default {
     }
 }
 </script>
+
 
 
