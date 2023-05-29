@@ -293,8 +293,6 @@ export default {
     </div>
 </template>
 
-<<<<<<< HEAD
-=======
 <style>
 .center-content {
     text-align: center;
@@ -305,4 +303,4 @@ export default {
 }
 
 </style>
->>>>>>> main
+
