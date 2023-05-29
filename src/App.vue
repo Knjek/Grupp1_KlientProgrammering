@@ -5,9 +5,10 @@ import NavMenu from './components/NavMenu.vue';
 
 <template>
   <div class="container">
-    <div align="center">
-      <NavMenu id="small" :small="true" />
-      <NavMenu id="big" :small="false" />
+    <div class="center-content">
+      <NavMenu class="small" :small="true" />
+      <NavMenu class="medium" :small="false" />
+      <NavMenu class="big" :small="false" />
     </div>
     <div>
       <RouterView>
@@ -17,15 +18,5 @@ import NavMenu from './components/NavMenu.vue';
 </template>
 
 <style>
-#big {
-  display: none;
-}
-@media screen and (min-width: 576px) {
-  #big {
-    display: flex;
-  }
-  #small {
-    display: none;
-  }
-}
+
 </style>
