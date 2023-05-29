@@ -44,7 +44,9 @@ export default {
     <h1 v-if="startButton">
       <BooksAndAuthors heading="Guess before your time runs out!" />
     </h1>
-    <h1 v-else>Time out! 😢</h1>
+    <h1 v-else>
+      <p id="message"> Time out! 😢</p>
+    </h1>
   </div>
 
   <!--    <BooksAndAuthors  hading="Guess before your time run's out!" />-->
@@ -64,5 +66,10 @@ export default {
 
 <style>
 #counter {
+  color: whitesmoke}
+</style>
+
+<style>
+#message {
   color: whitesmoke}
 </style>
