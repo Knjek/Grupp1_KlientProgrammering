@@ -1,8 +1,11 @@
 <script>
 import ReadFile from "../data/ReadFile.js"
-import { getBookAndAuthorByISBN } from "../data/misc.js"
+import { getBookAndAuthorByISBN, getTrendingYearly } from "../data/misc.js"
 import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
+
+import { mapStores } from 'pinia'
+import { useListStore } from "@/stores/listStore"
 
 export default {
     name: "NameAnagram",
@@ -32,10 +35,26 @@ export default {
 
         async setup() {
             try {
-                await this.getISBNList()
-            
-                this.randomIndex = Math.floor(Math.random() * this.isbn.length)
-                this.titleAuthor = await (getBookAndAuthorByISBN([this.isbn[this.randomIndex]]))
+                if (localStorage.listOfBooksAndAuthors) {
+                    this.listStore.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
+                }
+
+                if (this.listStore.listOfBooksAndAuthors < 50) {
+                    await this.getISBNList()
+                    fetchToStore()
+                    this.randomIndex = Math.floor(Math.random() * this.isbn.length)
+                    this.titleAuthor = await (getBookAndAuthorByISBN([this.isbn[this.randomIndex]]))
+                }
+                else {
+                    this.randomIndex = Math.floor(Math.random() * this.listStore.listOfBooksAndAuthors.length)
+                    let checkBookAndAuthor = this.listStore.listOfBooksAndAuthors[this.randomIndex]
+                    while (checkBookAndAuthor === "<unknown>") {
+                        this.listStore.remove(randomIndex)
+                        this.randomIndex++
+                    }
+                    this.titleAuthor = checkBookAndAuthor
+                }
+
                 console.log(this.titleAuthor[1])
                 this.correctSpelledAuthorName = this.titleAuthor[1].toUpperCase().replace(/[\s.()]/g, '')
                 console.log(this.correctSpelledAuthorName)
@@ -93,11 +112,25 @@ export default {
 
             this.userGuess = this.placeholder
             await this.setup()
-        }
+        },
+
+        async fetchToStore() {
+            const trendingYearlyList = await getTrendingYearly(1)
+            this.listStore.add(trendingYearlyList)
+            this.persist()
+        },
+
+        persist() {
+            localStorage.listOfBooksAndAuthors = JSON.stringify(this.listStore.listOfBooksAndAuthors)
+            console.log('persisted to local storage')
+        },
     },
     async mounted() {
         await this.setup()
     },
+    computed: {
+        ...mapStores(useListStore)
+    }
 }
 </script>
 

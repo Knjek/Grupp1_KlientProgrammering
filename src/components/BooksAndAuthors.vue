@@ -41,8 +41,6 @@ export default {
             wrongGuesses: 0,
             msg: "",
             isFetchLoaded: false,
-
-            //seems like there are no more than 8 pages
             pageNumber: 0,
         }
     },
@@ -147,7 +145,7 @@ export default {
             }
 
             // if the bigger fetch from the api is still not done, use the smaller local one (setup)
-            if (this.listStore.listOfBooksAndAuthors.length > 50) {     
+            if (this.listStore.listOfBooksAndAuthors.length > 20) {     
                 await this.run()
             } else {
                 await this.setup()
@@ -240,6 +238,10 @@ export default {
         }
         this.loading = false
         await load
+    },
+    beforeUnmount() {
+        // an way to stop fetchListOfBooksAndAuthors() from running
+        this.pageNumber = 10
     },
     mounted() {
         console.log("mounted called")
