@@ -19,7 +19,8 @@ export default {
         heading: {
             type: String,
             default: "Guess the author"
-        }
+        },
+        
     },
     data() {
         return {
@@ -245,7 +246,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="quiz">
         <div v-if="show" class="container">
             <div class="row">
                 <h1 class="center-content"> {{ heading }}</h1>
@@ -292,3 +293,16 @@ export default {
     </div>
 </template>
 
+<<<<<<< HEAD
+=======
+<style>
+.center-content {
+    text-align: center;
+}
+
+.center-content>* {
+    text-align: center;
+}
+
+</style>
+>>>>>>> main

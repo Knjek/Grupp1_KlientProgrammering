@@ -26,11 +26,17 @@ export default {
 </script>
 
 <template>
-  <div>
-    <BooksAndAuthors heading="Guess before your time run's out!" />
+  <div class="center-content">
+    <BooksAndAuthors heading="Guess before your time run's out!" id="timer"/>
 
     <button id="startButton" @click="timerCount=10">Start</button>
 
     <p>{{ timerCount }} seconds left </p>
   </div>
-</template>*/
+</template>
+
+<style>
+#timer {
+  border: 0.5em solid  rgba(253, 171, 103, 0.954);
+}
+</style>
