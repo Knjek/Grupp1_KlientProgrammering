@@ -1,15 +1,24 @@
 <script>
 import BooksAndAuthors from "../components/BooksAndAuthors.vue"
+import NavMenu from "../components/NavMenu.vue";
 
 export default {
-  components: {   
+  components: {
     BooksAndAuthors,
+    NavMenu,
   },
 }
 </script>
 
 <template>
-  <BooksAndAuthors :three-view="false" heading="Guess the author!" id="home"/>
+  <div class="container">
+    <div class="center-content">
+      <NavMenu class="small" :small="true" />
+      <NavMenu class="medium" :small="false" />
+      <NavMenu class="big" :small="false" />
+    </div>
+    <RouterView :key="$route.path"/>
+  </div>
 </template>
 
 <style>
