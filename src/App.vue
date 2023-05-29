@@ -1,21 +1,15 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import NavMenu from './components/NavMenu.vue';
 </script>
 
 <template>
-  <div class="container">
-    <div class="center-content">
-      <NavMenu class="small" :small="true" />
-      <NavMenu class="medium" :small="false" />
-      <NavMenu class="big" :small="false" />
-    </div>
-    <div>
-      <RouterView />
-    </div>
+  <div class="sidebar">
+    <router-link to="/home" class="btn btn-primary btn-sm">Home</router-link>
+    <router-link to="/about" class="btn btn-primary btn-sm">About</router-link>
+  </div>
+  <div>
+    <RouterView />
   </div>
 </template>
 
-<style>
-
-</style>
+<style></style>
