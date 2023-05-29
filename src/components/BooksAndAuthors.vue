@@ -7,6 +7,9 @@ import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
 import GuessHandler from "./GuessHandler.vue"
 
+import { mapStores } from 'pinia'
+import { useListStore } from "@/stores/listStore"
+
 
 export default {
     name: "BookAndAuthor",
@@ -24,7 +27,6 @@ export default {
     data() {
         return {
             isbn: [],
-            listOfBooksAndAuthors: [],
             shuffledList: [],
             book: "",
             correctAuthor: "",
@@ -75,7 +77,7 @@ export default {
                 // Check if the author or book already exist in the list
                 while (this.containsDuplicate(fourBooksAndAuthors)) {
                     // Almost same code as above... refactor?
-                    let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
+                    let randomIndex = Math.floor(Math.random() * this.isbn.length)
                     const newBookAuthor = await getBookAndAuthorByISBN(this.isbn[randomIndex])
                     fourBooksAndAuthors.push(newBookAuthor)
                 }
@@ -97,7 +99,7 @@ export default {
             console.log("using run")
 
             // this should only run once when under 100
-            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber >= 10) {
+            if (this.listStore.listOfBooksAndAuthors.length < 50 && this.pageNumber >= 10) {
                 console.log("fetching more books and authors")
                 this.pageNumber = 0
                 this.fetchListOfBooksAndAuthors()
@@ -106,18 +108,18 @@ export default {
             await this.delay(1000)
 
             const fourBooksAndAuthors = []
-            console.log("Number of books and authors stored: " + this.listOfBooksAndAuthors.length)
+            console.log("Number of books and authors stored: " + this.listStore.listOfBooksAndAuthors.length)
             for (let i = 0; i < 4; i++) {
-                let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
-                fourBooksAndAuthors.push(this.listOfBooksAndAuthors[randomIndex])
+                let randomIndex = Math.floor(Math.random() * this.listStore.listOfBooksAndAuthors.length)
+                fourBooksAndAuthors.push(this.listStore.listOfBooksAndAuthors[randomIndex])
                 //This removes the book and author from the list so it won't come again.  
-                this.listOfBooksAndAuthors.splice(randomIndex, 1)
+                this.listStore.remove(randomIndex)
             }
 
             while (this.containsDuplicate(fourBooksAndAuthors)) {
                 // Almost same code as above... refactor?
-                let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
-                const newBookAuthor = this.listOfBooksAndAuthors[randomIndex]
+                let randomIndex = Math.floor(Math.random() * this.listStore.listOfBooksAndAuthors.length)
+                const newBookAuthor = this.listStore.listOfBooksAndAuthors[randomIndex]
                 fourBooksAndAuthors.push(newBookAuthor)
             }
             this.persist()
@@ -145,7 +147,7 @@ export default {
             }
 
             // if the bigger fetch from the api is still not done, use the smaller local one (setup)
-            if (this.listOfBooksAndAuthors.length > 50) {     
+            if (this.listStore.listOfBooksAndAuthors.length > 50) {     
                 await this.run()
             } else {
                 await this.setup()
@@ -205,7 +207,7 @@ export default {
             while (this.pageNumber < 10) {
                 this.pageNumber++
                 const trendingYearlyList = await getTrendingYearly(this.pageNumber)
-                this.listOfBooksAndAuthors.push(...trendingYearlyList)
+                this.listStore.add(trendingYearlyList)
 
                 if(!this.isFetchLoaded) {
                     this.isFetchLoaded = true
@@ -216,7 +218,7 @@ export default {
         },
 
         persist() {
-            localStorage.listOfBooksAndAuthors = JSON.stringify(this.listOfBooksAndAuthors)
+            localStorage.listOfBooksAndAuthors = JSON.stringify(this.listStore.listOfBooksAndAuthors)
             console.log('persisted to local storage')
         },
 
@@ -224,12 +226,12 @@ export default {
     async created() {
         console.log("created called")
         if (localStorage.listOfBooksAndAuthors) {
-            this.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
+            this.listStore.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
             console.log('pushing from local storage')
             await this.getISBNList()
         }
         let load
-        if (this.listOfBooksAndAuthors.length < 50) {
+        if (this.listStore.listOfBooksAndAuthors.length < 50) {
             load = this.fetchListOfBooksAndAuthors()
             await this.getISBNList()
             await this.setup()
@@ -242,6 +244,9 @@ export default {
     mounted() {
         console.log("mounted called")
     },
+    computed: {
+        ...mapStores(useListStore)
+    }
 }
 </script>
 
