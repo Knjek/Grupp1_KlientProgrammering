@@ -3,6 +3,7 @@ import ReadFile from "../data/ReadFile.js"
 import { getBookAndAuthorByISBN, shuffle, getTrendingYearly } from "../data/misc.js"
 import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
+import AuthorDiv from "./AuthorDiv.vue"
 import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
 import GuessHandler from "./GuessHandler.vue"
@@ -47,6 +48,7 @@ export default {
     components: {
         BookTitle,
         AuthorName,
+        AuthorDiv,
         PageLoader,
         ErrorHandler,
         GuessHandler,
@@ -228,7 +230,7 @@ export default {
             console.log('pushing from local storage')
         }
         let load
-        if (this.listOfBooksAndAuthors.length === 0) {
+        if (this.listOfBooksAndAuthors.length < 50) {
             load = this.fetchListOfBooksAndAuthors()
             await this.getISBNList()
             await this.setup()
@@ -245,31 +247,16 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="quiz" id="home">
         <div v-if="show" class="container">
             <div class="row">
                 <h1 class="center-content"> {{ heading }}</h1>
                 <p class="center-content">You have a maximum of ten guesses.</p>
                 <BookTitle class="center-content" :title="book" />
                 <div class="center-content">
-                    <div class="btn-group big">
-                        <!-- should be button group or radio button to not be able to click all buttons 
-                        class="my-2 col-12 col-md-6 col-lg-3 border" -->
+                        <!-- <AuthorDiv :list="shuffledList" @click.once="validate"/> -->
                         <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
-                         class="m-2" @click.once="validate" />
-                    </div>
-                    <div class="btn-group medium">
-                        <AuthorName :name="shuffledList[0][1]" :value="shuffledList[0][1]" class="m-2" @click.once="validate" />
-                        <AuthorName :name="shuffledList[1][1]" :value="shuffledList[1][1]" class="m-2" @click.once="validate" />
-                    </div>
-                    <div class="btn-group medium">
-                        <AuthorName :name="shuffledList[2][1]" :value="shuffledList[2][1]" class="m-2" @click.once="validate" />
-                        <AuthorName :name="shuffledList[3][1]" :value="shuffledList[3][1]" class="m-2" @click.once="validate" />
-                    </div>
-                    <div class="btn-group-vertical small">
-                        <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
-                         class="m-2" @click.once="validate" />
-                    </div>
+                        :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate"/>
                 </div>
                 <div class="my-2">
                     <p class="center-content">
