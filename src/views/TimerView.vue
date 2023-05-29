@@ -66,10 +66,10 @@ export default {
 
 <style>
 #counter {
-  color: whitesmoke}
+  color: black}
 </style>
 
 <style>
 #message {
-  color: whitesmoke}
+  color: black}
 </style>
