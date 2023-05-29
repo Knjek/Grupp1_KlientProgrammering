@@ -1,3 +1,8 @@
+/**
+ * Fetches a book title and author name based on an ISBN.
+ * @param {String} isbn 
+ * @returns an Array of two Strings: ['book title', 'author name']
+ */
 export async function getBookAndAuthorByISBN(isbn) {
     const resp = await fetch(`https://openlibrary.org/isbn/${isbn}.json`)
 
@@ -26,6 +31,11 @@ export async function getBookAndAuthorByISBN(isbn) {
     return bookAndAuthor
 }
 
+/**
+ * Fetches api-specific authorOLID from worksOLID
+ * @param {String} worksOLID 
+ * @returns authorOLID as String
+ */
 async function getAuthorOLIDFromWorkOLID(worksOLID) {
     const resp = await fetch(`https://openlibrary.org${worksOLID}.json`)
 
@@ -38,6 +48,11 @@ async function getAuthorOLIDFromWorkOLID(worksOLID) {
     return json.authors[0].author.key
 }
 
+/**
+ * Fetches a author name based on api-specific authorOLID
+ * @param {String} authorOLID 
+ * @returns Author name as String
+ */
 async function getAuthorNameByOLID(authorOLID) {
     const resp = await fetch(`https://openlibrary.org${authorOLID}.json`)
 
@@ -58,6 +73,10 @@ async function getAuthorNameByOLID(authorOLID) {
     }
 }
 
+/**
+ * @param {number} page number to fetch. Each page contains 100 json-objects.
+ * @returns a list containing 100 lists of strings in the format: ['title', 'author']
+ */
 export async function getTrendingYearly(page) {
     const resp = await fetch(`https://openlibrary.org/trending/yearly.json?page=${page}`)
 

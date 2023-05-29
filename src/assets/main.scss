@@ -3,7 +3,7 @@
 );
 
 #app {
-    background-color: rgba(0, 0, 0, 0.365);
+    // background-color: rgba(0, 0, 0, 0.365);
     align-self: baseline;
     margin: calc(2.9625vw + 2em);
     padding: calc(1.2625vw + 1em);
@@ -12,7 +12,7 @@
 body {
     font-family: "Trirong", serif;
     align-items: center;
-    background-image: url("background.jpg");
+    // background-image: url("background.jpg");
     background-size: 30%;
 
 }
@@ -80,7 +80,7 @@ html,
 }
 
 .btn.btn-success:disabled {
-    background-color: red;
+    background-color: green;
 }
 
 #authorname {

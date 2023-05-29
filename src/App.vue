@@ -11,8 +11,7 @@ import NavMenu from './components/NavMenu.vue';
       <NavMenu class="big" :small="false" />
     </div>
     <div>
-      <RouterView>
-      </RouterView>
+      <RouterView />
     </div>
   </div>
 </template>
