@@ -19,8 +19,7 @@ export default {
         heading: {
             type: String,
             default: "Guess the author"
-        },
-        
+        }
     },
     data() {
         return {
@@ -200,6 +199,8 @@ export default {
             return new Promise(resolve => setTimeout(resolve, time));
         },
 
+        // will load books and authors in the background. when the first 100 is loaded
+        // program switches to use run() instead of setup()
         async fetchListOfBooksAndAuthors() {
             while (this.pageNumber < 10) {
                 this.pageNumber++
@@ -225,9 +226,10 @@ export default {
         if (localStorage.listOfBooksAndAuthors) {
             this.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
             console.log('pushing from local storage')
+            await this.getISBNList()
         }
         let load
-        if (this.listOfBooksAndAuthors.length === 0) {
+        if (this.listOfBooksAndAuthors.length < 50) {
             load = this.fetchListOfBooksAndAuthors()
             await this.getISBNList()
             await this.setup()
@@ -244,16 +246,15 @@ export default {
 </script>
 
 <template>
-    <div class="quiz">
+    <div class="quiz" id="home">
         <div v-if="show" class="container">
             <div class="row">
                 <h1 class="center-content"> {{ heading }}</h1>
                 <p class="center-content">You have a maximum of ten guesses.</p>
                 <BookTitle class="center-content" :title="book" />
-                <div>
-                    <!-- should be button group or radio button to not be able to click all buttons -->
-                    <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
-                        class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate" />
+                <div class="center-content">
+                        <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
+                        :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate"/>
                 </div>
                 <div class="my-2">
                     <p class="center-content">
@@ -276,13 +277,3 @@ export default {
     </div>
 </template>
 
-<style>
-.center-content {
-    text-align: center;
-}
-
-.center-content>* {
-    text-align: center;
-}
-
-</style>
