@@ -226,6 +226,7 @@ export default {
         if (localStorage.listOfBooksAndAuthors) {
             this.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
             console.log('pushing from local storage')
+            await this.getISBNList()
         }
         let load
         if (this.listOfBooksAndAuthors.length < 50) {
