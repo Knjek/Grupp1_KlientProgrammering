@@ -12,6 +12,9 @@ import { useListStore } from "@/stores/listStore"
 
 
 export default {
+    /**
+     * Component for showing one book title and 4 different author names.
+     */
     name: "BookAndAuthor",
     props: {
         threeView: {
@@ -134,6 +137,7 @@ export default {
         },
 
         /**
+         * Gets called when user presses button.
          * Checks if the pressed button is the correct one and changes it's color.
          * Starts next load.
          * @param {Event} evt 
