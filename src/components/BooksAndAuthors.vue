@@ -57,8 +57,12 @@ export default {
             this.isbn = await ReadFile.makeList()
         },
 
+        /**
+         * Uses a text file of 100 isbn and fetching each one, instead of fetching a bulk from the api.
+         * Should be used while waiting for bulk fetch to complete.
+         * Implements a delay of 1 second for the player to be able to see their last result.
+         */
         async setup() {
-            console.log("using setup")
             const allPromises = []
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.isbn.length)
@@ -93,12 +97,14 @@ export default {
             this.show = true
         },
 
+        /**
+         * Runs when there is data in listStore. 
+         * Much faster than setup.
+         * Implements a delay of 1 second for the player to be able to see their last result.
+         */
         async run() {
-            console.log("using run")
-
             // this should only run once when under 100
             if (this.listStore.listOfBooksAndAuthors.length < 50 && this.pageNumber >= 10) {
-                console.log("fetching more books and authors")
                 this.pageNumber = 0
                 this.fetchListOfBooksAndAuthors()
             }
@@ -106,7 +112,6 @@ export default {
             await this.delay(1000)
 
             const fourBooksAndAuthors = []
-            console.log("Number of books and authors stored: " + this.listStore.listOfBooksAndAuthors.length)
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.listStore.listOfBooksAndAuthors.length)
                 fourBooksAndAuthors.push(this.listStore.listOfBooksAndAuthors[randomIndex])
@@ -128,6 +133,11 @@ export default {
             this.show = true
         },
 
+        /**
+         * Checks if the pressed button is the correct one and changes it's color.
+         * Starts next load.
+         * @param {Event} evt 
+         */
         async validate(evt) {
             this.loading = true
 
@@ -153,36 +163,36 @@ export default {
 
             evt.target.classList.remove('btn-danger', 'btn-success')
 
+            // props for a different ruleset
             if (this.threeView) {
                 if (this.wrongGuesses >= 3) {
-                    this.tenGuesses = true
+                    this.hundredGuesses = true
                     this.show = false
                     this.msg = "You got three strikes, you're out!"
                 }
             }
 
             if (this.guesses === this.maxGuesses) {
-                this.tenGuesses = true
+                this.hundredGuesses = true
                 this.show = false
                 this.msg = "You have used all your guesses."
             }
         },
 
+        /**
+         * Checks for duplicates and removes them from the list.
+         * @param {Array} fourBooksAndAuthors list of lists, four lists of book titles and author names.
+         */
         containsDuplicate(fourBooksAndAuthors) {
             const uniqueElements = new Set();
             for (const BookAndAuthor of fourBooksAndAuthors) {
-                // console.log(BookAndAuthor[0] + " by " + BookAndAuthor[1])
                 uniqueElements.add(BookAndAuthor[1])
             }
-            // printing out list-sizes
-            console.log(fourBooksAndAuthors.length + " authors in list")
-            console.log(uniqueElements.size + " unique authors")
             if (Number(uniqueElements.size) !== Number(fourBooksAndAuthors.length)) {
                 for (const name of uniqueElements) {
                     let count = 0
                     for (let i = 0; i < fourBooksAndAuthors.length; i++) {
                         if (name === fourBooksAndAuthors[i][1]) {
-                            console.log("replacing author")
                             count++
                             if (count > 1) {
                                 fourBooksAndAuthors.splice(i, 1)
@@ -195,12 +205,18 @@ export default {
             return false
         },
 
+        /**
+         * Waits for the set amount of time.
+         * @param {number} time in milliseconds.
+         */
         delay(time) {
             return new Promise(resolve => setTimeout(resolve, time));
         },
 
-        // will load books and authors in the background. when the first 100 is loaded
-        // program switches to use run() instead of setup()
+        /**
+         *  Will load books and authors in the background. when the first 100 is loaded
+         *  program switches to use run() instead of setup()
+         */
         async fetchListOfBooksAndAuthors() {
             while (this.pageNumber < 10) {
                 this.pageNumber++
@@ -209,23 +225,18 @@ export default {
 
                 if(!this.isFetchLoaded) {
                     this.isFetchLoaded = true
-                    console.log("isFetchLoaded: " + this.isFetchLoaded)
                 }
-                console.log("Loaded page no. " + this.pageNumber)
             }
         },
 
         persist() {
             localStorage.listOfBooksAndAuthors = JSON.stringify(this.listStore.listOfBooksAndAuthors)
-            console.log('persisted to local storage')
         },
 
     },
     async created() {
-        console.log("created called")
         if (localStorage.listOfBooksAndAuthors) {
             this.listStore.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
-            console.log('pushing from local storage')
             await this.getISBNList()
         }
         let load
@@ -243,9 +254,6 @@ export default {
         // an way to stop fetchListOfBooksAndAuthors() from running
         this.pageNumber = 10
     },
-    mounted() {
-        console.log("mounted called")
-    },
     computed: {
         ...mapStores(useListStore)
     }
@@ -257,7 +265,7 @@ export default {
         <div v-if="show" class="container">
             <div class="row">
                 <h1 class="center-content"> {{ heading }}</h1>
-                <p class="center-content">You have a maximum of ten guesses.</p>
+                <p class="center-content">You have a maximum of {{ maxGuesses }} guesses.</p>
                 <BookTitle class="center-content" :title="book" />
                 <div class="center-content">
                         <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
