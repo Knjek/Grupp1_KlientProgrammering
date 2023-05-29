@@ -1,5 +1,5 @@
 <template>
-    <input type="button" class="btn btn-primary" :value="name" id="authorname">
+    <input type="button" class="btn btn-primary" :value="name">
 </template>
 
 <script>

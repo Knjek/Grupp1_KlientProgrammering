@@ -3,7 +3,6 @@ import ReadFile from "../data/ReadFile.js"
 import { getBookAndAuthorByISBN, shuffle, getTrendingYearly } from "../data/misc.js"
 import BookTitle from "./BookTitle.vue"
 import AuthorName from "./AuthorName.vue"
-import AuthorDiv from "./AuthorDiv.vue"
 import PageLoader from "./PageLoader.vue"
 import ErrorHandler from "./ErrorHandler.vue"
 import GuessHandler from "./GuessHandler.vue"
@@ -48,7 +47,6 @@ export default {
     components: {
         BookTitle,
         AuthorName,
-        AuthorDiv,
         PageLoader,
         ErrorHandler,
         GuessHandler,
@@ -254,7 +252,6 @@ export default {
                 <p class="center-content">You have a maximum of ten guesses.</p>
                 <BookTitle class="center-content" :title="book" />
                 <div class="center-content">
-                        <!-- <AuthorDiv :list="shuffledList" @click.once="validate"/> -->
                         <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
                         :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate"/>
                 </div>
