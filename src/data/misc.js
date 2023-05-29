@@ -9,20 +9,24 @@ export async function getBookAndAuthorByISBN(isbn) {
 
     let bookAndAuthor = []
 
-    bookAndAuthor.push(json.title)
+    if(json.title === undefined) {
+        bookAndAuthor.push("undefined title in isbn: " + isbn)
+    }else {
+        bookAndAuthor.push(json.title)
+    }
 
-    // needs to do check if author olid doesn't work
+    // needs to do check if author olid from isbn-call doesn't work
     // this is a workaround
     let worksOLID = json.works[0].key
-    let authorOLID = await getWorkbyOLID(worksOLID) //json.authors[0].author.key
+    let authorOLID = await getAuthorOLIDFromWorkOLID(worksOLID) //json.authors[0].author.key
 
-    let authorName = await getAuthorByOLID(authorOLID)
+    let authorName = await getAuthorNameByOLID(authorOLID)
     bookAndAuthor.push(authorName)
 
     return bookAndAuthor
 }
 
-async function getWorkbyOLID(worksOLID) {
+async function getAuthorOLIDFromWorkOLID(worksOLID) {
     const resp = await fetch(`https://openlibrary.org${worksOLID}.json`)
 
     if (!resp.ok) {
@@ -34,7 +38,7 @@ async function getWorkbyOLID(worksOLID) {
     return json.authors[0].author.key
 }
 
-async function getAuthorByOLID(authorOLID) {
+async function getAuthorNameByOLID(authorOLID) {
     const resp = await fetch(`https://openlibrary.org${authorOLID}.json`)
 
     if (!resp.ok) {
@@ -66,8 +70,8 @@ export async function getTrendingYearly(page) {
     const listOfBooksAndAuthors = []
     for (const obj of json.works) {
         const list = []
-        list.push(obj.title)
-        list.push(obj.author_name[0])
+        list.push(obj.title ?? "<unknown>")
+        list.push(obj.author_name?.at(0) ?? "<unknown>")
         listOfBooksAndAuthors.push(list)
     }
 

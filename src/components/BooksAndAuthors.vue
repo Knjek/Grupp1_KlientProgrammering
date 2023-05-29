@@ -19,7 +19,8 @@ export default {
         heading: {
             type: String,
             default: "Guess the author"
-        }
+        },
+        
     },
     data() {
         return {
@@ -29,7 +30,7 @@ export default {
             book: "",
             correctAuthor: "",
             score: 0,
-            maxGuesses: 10,
+            maxGuesses: 100,
             guesses: 0,
             loading: true,
             show: false,
@@ -38,7 +39,10 @@ export default {
             tenGuesses: false,
             wrongGuesses: 0,
             msg: "",
-            fetchLoad: false,
+            isFetchLoaded: false,
+
+            //seems like there are no more than 8 pages
+            pageNumber: 0,
         }
     },
     components: {
@@ -55,6 +59,7 @@ export default {
         },
 
         async setup() {
+            console.log("using setup")
             const allPromises = []
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.isbn.length)
@@ -72,7 +77,7 @@ export default {
                 while (this.containsDuplicate(fourBooksAndAuthors)) {
                     // Almost same code as above... refactor?
                     let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
-                    const newBookAuthor = this.listOfBooksAndAuthors[randomIndex]
+                    const newBookAuthor = await getBookAndAuthorByISBN(this.isbn[randomIndex])
                     fourBooksAndAuthors.push(newBookAuthor)
                 }
             } catch (Error) {
@@ -90,11 +95,19 @@ export default {
         },
 
         async run() {
+            console.log("using run")
+
+            // this should only run once when under 100
+            if (this.listOfBooksAndAuthors.length < 50 && this.pageNumber >= 10) {
+                console.log("fetching more books and authors")
+                this.pageNumber = 0
+                this.fetchListOfBooksAndAuthors()
+            }
             // wait a second before changing authors so the player can see the change of colors
             await this.delay(1000)
 
             const fourBooksAndAuthors = []
-            console.log(this.listOfBooksAndAuthors.length)
+            console.log("Number of books and authors stored: " + this.listOfBooksAndAuthors.length)
             for (let i = 0; i < 4; i++) {
                 let randomIndex = Math.floor(Math.random() * this.listOfBooksAndAuthors.length)
                 fourBooksAndAuthors.push(this.listOfBooksAndAuthors[randomIndex])
@@ -108,6 +121,7 @@ export default {
                 const newBookAuthor = this.listOfBooksAndAuthors[randomIndex]
                 fourBooksAndAuthors.push(newBookAuthor)
             }
+            this.persist()
             this.book = fourBooksAndAuthors[0][0]
             this.correctAuthor = fourBooksAndAuthors[0][1]
             this.shuffledList = shuffle(fourBooksAndAuthors)
@@ -132,7 +146,7 @@ export default {
             }
 
             // if the bigger fetch from the api is still not done, use the smaller local one (setup)
-            if (this.fetchLoad) {
+            if (this.listOfBooksAndAuthors.length > 50) {     
                 await this.run()
             } else {
                 await this.setup()
@@ -158,9 +172,10 @@ export default {
         containsDuplicate(fourBooksAndAuthors) {
             const uniqueElements = new Set();
             for (const BookAndAuthor of fourBooksAndAuthors) {
-                console.log(BookAndAuthor[1])
+                // console.log(BookAndAuthor[0] + " by " + BookAndAuthor[1])
                 uniqueElements.add(BookAndAuthor[1])
             }
+            // printing out list-sizes
             console.log(fourBooksAndAuthors.length + " authors in list")
             console.log(uniqueElements.size + " unique authors")
             if (Number(uniqueElements.size) !== Number(fourBooksAndAuthors.length)) {
@@ -178,34 +193,67 @@ export default {
                 }
                 return true
             }
+            return false
         },
 
         delay(time) {
             return new Promise(resolve => setTimeout(resolve, time));
         },
 
+        async fetchListOfBooksAndAuthors() {
+            while (this.pageNumber < 10) {
+                this.pageNumber++
+                const trendingYearlyList = await getTrendingYearly(this.pageNumber)
+                this.listOfBooksAndAuthors.push(...trendingYearlyList)
+
+                if(!this.isFetchLoaded) {
+                    this.isFetchLoaded = true
+                    console.log("isFetchLoaded: " + this.isFetchLoaded)
+                }
+                console.log("Loaded page no. " + this.pageNumber)
+            }
+        },
+
+        persist() {
+            localStorage.listOfBooksAndAuthors = JSON.stringify(this.listOfBooksAndAuthors)
+            console.log('persisted to local storage')
+        },
+
     },
     async created() {
-        const trendingYearlyList = getTrendingYearly(1)
-        await this.getISBNList()
-        await this.setup()
+        console.log("created called")
+        if (localStorage.listOfBooksAndAuthors) {
+            this.listOfBooksAndAuthors = JSON.parse(localStorage.listOfBooksAndAuthors)
+            console.log('pushing from local storage')
+        }
+        let load
+        if (this.listOfBooksAndAuthors.length === 0) {
+            load = this.fetchListOfBooksAndAuthors()
+            await this.getISBNList()
+            await this.setup()
+        } else {
+            await this.run()
+        }
         this.loading = false
-        this.listOfBooksAndAuthors = await trendingYearlyList
-        this.fetchLoad = true
+        await load
+    },
+    mounted() {
+        console.log("mounted called")
     },
 }
 </script>
 
 <template>
-    <div>
+    <div class="quiz">
         <div v-if="show" class="container">
             <div class="row">
                 <h1 class="center-content"> {{ heading }}</h1>
                 <p class="center-content">You have a maximum of ten guesses.</p>
                 <BookTitle class="center-content" :title="book" />
                 <div>
-                    <AuthorName v-for="sets in shuffledList" :key="sets.author_name" :name="sets[1]" :value="sets[1]"
-                        class="my-2 col-12 col-md-6 col-lg-3 border" @click="validate" />
+                    <!-- should be button group or radio button to not be able to click all buttons -->
+                    <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
+                        class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate" />
                 </div>
                 <div class="my-2">
                     <p class="center-content">
@@ -217,10 +265,10 @@ export default {
         </div>
         <div class="center-content" v-if="loading">
             <h2>{{ msg }}</h2>
-            <PageLoader ></PageLoader>
+            <PageLoader></PageLoader>
         </div>
-        <div v-if="error">
-            <ErrorHandler class="center-content" :msg="errorMsg" />
+        <div class="center-content m-2" v-if="error">
+            <ErrorHandler  :msg="errorMsg" />
         </div>
         <div v-if="tenGuesses">
             <GuessHandler class="center-content" :msg="msg" :guesses="guesses" :score="score" />
@@ -232,7 +280,9 @@ export default {
 .center-content {
     text-align: center;
 }
-.center-content > * {
+
+.center-content>* {
     text-align: center;
 }
+
 </style>

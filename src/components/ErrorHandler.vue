@@ -1,5 +1,5 @@
 <template>
-    Error: {{ msg }}
+    <h2 style="color: red">Error: {{ msg }}</h2>
 </template>
 
 <script>

@@ -1,4 +1,67 @@
-@use '~bootstrap/scss/bootstrap' with (
-    $enable-rounded: false,
+@use '~bootstrap/scss/bootstrap' with ($enable-rounded: false,
     $dropdown-link-hover-bg: rgb(255, 200, 0),
 );
+
+#app {
+    background-color: rgba(0, 0, 0, 0.365);
+    align-self: baseline;
+    margin: calc(1.5625vw + 2em);
+    padding: calc(1.2625vw + 1em);
+}
+
+body {
+    font-family: "Trirong", serif;
+    align-items: center;
+    background-image: url("../../dist/testbg4.jpg");
+    background-size: 30%;
+
+}
+
+.nav-container {
+    display: flex;
+}
+
+nav.row .btn {
+    margin: calc(1.5625vw - 5px);
+    margin-bottom: 0;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+.anagram {
+    padding: calc(1.9625vw + 1em);
+    background-color: azure;
+}
+
+.quiz {
+    padding: calc(1.9625vw + 1em);
+    background-color: whitesmoke;
+}
+
+html,
+.btn {
+    font-family: "Trirong", serif;
+    color: black;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+}
+
+.btn-outline-warning {
+    background-color: rgba(253, 236, 140, 0.949);
+}
+
+.btn-outline-success {
+    background-color: rgba(252, 182, 147, 0.944);
+}
+
+.btn-outline-primary {
+    background-color: rgba(253, 171, 103, 0.954);
+}
+
+.btn-outline-danger {
+    background-color: rgb(166, 223, 147);
+}
+
+#authorname {
+    background-color: rgb(246, 246, 199);
+}
