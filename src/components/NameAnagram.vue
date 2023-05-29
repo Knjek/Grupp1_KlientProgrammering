@@ -78,7 +78,7 @@ export default {
             
             if (this.userGuess !== undefined && this.userGuess !== "") {
 
-                if (this.userGuess.toUpperCase().replace(/[\s.]/g, '') === this.correctSpelledAuthorName) {
+                if (this.userGuess.toUpperCase().replace(/[\s.'`]/g, '') === this.correctSpelledAuthorName.replace(/['`]/g, "")) {
                     this.count++
                     this.msg = "Aweseome dude!"
                 }
@@ -106,7 +106,7 @@ export default {
         <div v-if="show" align="center">
             <h3>{{ shuffledAuthorName }}</h3>
             <p>Guess the author name!</p>
-            <input type="text" placeholder="Write the name here" v-model="userGuess">
+            <input type="text" placeholder="Write the name here" v-model="userGuess" @keyup.enter="validate">
             <input type="button" value="Check if correct" @click="validate">
             <p>Correct guesses: {{ count }}</p>
             <p>Wrong guesses: {{ wrongGuesses }}</p>
