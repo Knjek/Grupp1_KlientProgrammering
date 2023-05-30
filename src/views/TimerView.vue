@@ -8,26 +8,37 @@ export default {
   data() {
     return {
       timerCount: 0,
-      startButton: false
+      startButton: false,
+      showTimeoutMessage: false,
+      timeoutId: null
     }
   },
   methods: {
     start() {
       this.timerCount = 10
       this.startButton = true
+      this.showTimeoutMessage = false
+      this.startTimeout()
+    },
+    startTimeout() {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        this.showTimeoutMessage = true
+        setTimeout(() => {
+          this.showTimeoutMessage = false
+        }, 5000)
+      }, this.timerCount * 1000)
     }
   },
   watch: {
-    timerCount: {
-      handler(value) {
-        if (value > 0) {
-          setTimeout(() => {
-            this.timerCount--;
-          }, 1000);
-        }
-        if (value === 0) {
-          this.startButton = false
-        }
+    timerCount(value) {
+      if (value > 0) {
+        setTimeout(() => {
+          this.timerCount--;
+        }, 1000);
+      } else if (value === 0) {
+        this.startButton = false
+        clearTimeout(this.timeoutId)
       }
     }
   }
@@ -36,40 +47,29 @@ export default {
 
 <template>
   <!-- hide until press start
-      AND
-      when timer is 0 hide again-->
+              AND
+              when timer is 0 hide again-->
+
   <div id="timer">
     <button id="startButton" @click="start">Start</button>
-
-    <h1 v-if="startButton">
-      <BooksAndAuthors heading="Guess before your time runs out!" />
-    </h1>
-    <h1 v-else>
-      <p id="message"> Time out! 😢</p>
-    </h1>
-  </div>
-
-  <!--    <BooksAndAuthors  hading="Guess before your time run's out!" />-->
-
-  <!--    <button id="startButton" @click="timerCount=10">Start</button>-->
-  <div>
-
-    <p  id="counter">{{ timerCount }} seconds left </p>
+    <div v-if="startButton">
+      <BooksAndAuthors :timer-view="true" :timer-count="timerCount" heading="Guess the author!" />
+    </div>
+    <p v-else-if="showTimeoutMessage"> Time out! 😢</p>
   </div>
 </template>
 
 <style>
 #timer {
   border: 0.5em solid rgba(253, 171, 103, 0.954);
+  background-color: whitesmoke;
 }
-</style>
 
-<style>
-#counter {
-  color: black}
-</style>
+#timer #counter {
+  color: black;
+}
 
-<style>
-#message {
-  color: black}
+#timer #message {
+  color: black;
+}
 </style>
