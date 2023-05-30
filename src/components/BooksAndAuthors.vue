@@ -282,9 +282,9 @@ export default {
                 <p class="center-content" v-if="timerView"> <strong>Guess before your time runs out!</strong></p>
                 <p class="center-content" v-if="threeView"><strong>3 wrong guesses and you're out!</strong></p>
                 <BookTitle class="center-content" :title="book" />
-                <div class="center-content">
-                    <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
-                        :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate" />
+                <div class="center-content guess-buttons">
+                        <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
+                        :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate"/>
                 </div>
                 <div class="my-2">
                     <p class="center-content">
@@ -299,14 +299,14 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="center-content" v-if="loading">
+        <div class="center-content loader" v-if="loading">
             <h2>{{ msg }}</h2>
             <PageLoader></PageLoader>
         </div>
-        <div class="center-content m-2" v-if="error">
-            <ErrorHandler :msg="errorMsg" />
+        <div class="center-content error m-2" v-if="error">
+            <ErrorHandler  :msg="errorMsg" />
         </div>
-        <div v-if="tenGuesses">
+        <div v-if="hundredGuesses">
             <GuessHandler class="center-content" :msg="msg" :guesses="guesses" :score="score" />
         </div>
     </div>
