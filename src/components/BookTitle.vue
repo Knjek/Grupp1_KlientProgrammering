@@ -9,3 +9,9 @@ export default {
     }
 }
 </script>
+
+<style>
+h2 {
+    padding-top: 1em;
+}
+</style>

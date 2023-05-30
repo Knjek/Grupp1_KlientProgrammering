@@ -10,7 +10,7 @@ export default {
 
 <template>
   <div>
-    <BooksAndAuthors :three-view="true" heading="3 wrong guesses and you're out!" id="three" />
+    <BooksAndAuthors :three-view="true" id="three" heading="Guess the author!" />
   </div>
 </template>
 

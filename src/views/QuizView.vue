@@ -10,7 +10,7 @@ export default {
 
 <template>
     <div>
-        <BooksAndAuthors :three-view="false" heading="Guess the author!" id="home" />
+        <BooksAndAuthors :three-view="false" :timer-view="false" heading="Guess the author!" id="home" />
     </div>
 </template>
 

@@ -22,9 +22,18 @@ export default {
             required: true,
             default: false
         },
+        timerView: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
         heading: {
             type: String,
             default: "Guess the author"
+        },
+        timerCount: {
+            type: Number,
+            required: true
         }
     },
     data() {
@@ -159,7 +168,7 @@ export default {
             }
 
             // if the bigger fetch from the api is still not done, use the smaller local one (setup)
-            if (this.listStore.listOfBooksAndAuthors.length > 20) {     
+            if (this.listStore.listOfBooksAndAuthors.length > 20) {
                 await this.run()
             } else {
                 await this.setup()
@@ -227,7 +236,7 @@ export default {
                 const trendingYearlyList = await getTrendingYearly(this.pageNumber)
                 this.listStore.add(trendingYearlyList)
 
-                if(!this.isFetchLoaded) {
+                if (!this.isFetchLoaded) {
                     this.isFetchLoaded = true
                 }
             }
@@ -268,8 +277,10 @@ export default {
     <div class="quiz" id="home">
         <div v-if="show" class="container">
             <div class="row">
-                <h1 class="center-content"> {{ heading }}</h1>
+                <h3 class="center-content"> {{ heading }}</h3>
                 <p class="center-content">You have a maximum of {{ maxGuesses }} guesses.</p>
+                <p class="center-content" v-if="timerView"> <strong>Guess before your time runs out!</strong></p>
+                <p class="center-content" v-if="threeView"><strong>3 wrong guesses and you're out!</strong></p>
                 <BookTitle class="center-content" :title="book" />
                 <div class="center-content guess-buttons">
                         <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
@@ -279,7 +290,12 @@ export default {
                     <p class="center-content">
                         Your score is: {{ score }}
                     </p>
-                    <p class="center-content" v-if="threeView">Wrong guesses: {{ wrongGuesses }}</p>
+                    <div class="center-content" v-if="threeView">
+                        <p>Wrong guesses: {{ wrongGuesses }}</p>
+                    </div>
+                    <div class="center-content" v-if="timerView">
+                        <p id="counter">{{ timerCount }} seconds left </p>
+                    </div>
                 </div>
             </div>
         </div>

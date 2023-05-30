@@ -5,8 +5,8 @@
 #app {
     background-color: rgba(0, 0, 0, 0.365);
     align-self: baseline;
-    margin: calc(2.9625vw + 2em);
-    padding: calc(1.2625vw + 1em);
+    margin: calc(1vw + 2em);
+    padding: calc(0.5vw + 1em);
 }
 
 body {
@@ -14,7 +14,6 @@ body {
     align-items: center;
     background-image: url("background.jpg");
     background-size: 30%;
-
 }
 
 .nav-container {
@@ -26,15 +25,20 @@ nav.row .btn {
     margin-bottom: 0;
     flex-grow: 1;
     flex-shrink: 0;
+    font-size: calc(13px + 0.390625vw);
+}
+
+html {
+    font-size: calc(12px + 0.390625vw);
 }
 
 .anagram {
-    padding: calc(1.9625vw + 1em);
+    padding: calc(1vw + 0.5em);
     background-color: azure;
 }
 
 .quiz {
-    padding: calc(1.9625vw + 1em);
+    padding: calc(1vw + 0.5em);
     background-color: whitesmoke;
 }
 
@@ -81,6 +85,10 @@ html,
 
 .btn.btn-success:disabled {
     background-color: green;
+}
+
+p {
+    margin: 0.3em;
 }
 
 .sidebar {
