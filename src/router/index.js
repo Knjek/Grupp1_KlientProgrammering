@@ -11,7 +11,7 @@ import QuizView from "../views/QuizView.vue"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: "/:gamemode", name: "home", component: HomeView, children: [
+    { path: "/:gamemode", alias: '/', name: "home", component: HomeView, children: [
       { path: "", name: "quiz", component: QuizView},
       { path: "/max3", name: "max3", component: ThreeErrorsView},
       { path: "/2player", name: "2player", component: TwoPlayerView},

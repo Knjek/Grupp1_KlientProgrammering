@@ -271,7 +271,7 @@ export default {
                 <h1 class="center-content"> {{ heading }}</h1>
                 <p class="center-content">You have a maximum of {{ maxGuesses }} guesses.</p>
                 <BookTitle class="center-content" :title="book" />
-                <div class="center-content">
+                <div class="center-content guess-buttons">
                         <AuthorName v-for="sets in shuffledList" :key="sets[0] + sets[1]" :name="sets[1]" :value="sets[1]"
                         :disabled="loading" class="my-2 col-12 col-md-6 col-lg-3 border" @click.once="validate"/>
                 </div>
@@ -283,11 +283,11 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="center-content" v-if="loading">
+        <div class="center-content loader" v-if="loading">
             <h2>{{ msg }}</h2>
             <PageLoader></PageLoader>
         </div>
-        <div class="center-content m-2" v-if="error">
+        <div class="center-content error m-2" v-if="error">
             <ErrorHandler  :msg="errorMsg" />
         </div>
         <div v-if="tenGuesses">
