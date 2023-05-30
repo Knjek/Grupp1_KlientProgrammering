@@ -290,7 +290,7 @@ export default {
         <div class="center-content error m-2" v-if="error">
             <ErrorHandler  :msg="errorMsg" />
         </div>
-        <div v-if="tenGuesses">
+        <div v-if="hundredGuesses">
             <GuessHandler class="center-content" :msg="msg" :guesses="guesses" :score="score" />
         </div>
     </div>
