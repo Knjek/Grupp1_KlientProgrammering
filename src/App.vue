@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router'
 
 <template>
   <div class="sidebar">
-    <router-link to="/home" class="btn btn-primary btn-sm">Home</router-link>
+    <router-link to="/" class="btn btn-primary btn-sm">Home</router-link>
     <router-link to="/about" class="btn btn-primary btn-sm">About</router-link>
   </div>
   <div>
@@ -13,4 +13,5 @@ import { RouterView } from 'vue-router'
   </div>
 </template>
 
-<style></style>
+<style>
+</style>
